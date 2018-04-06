@@ -39,7 +39,7 @@ const studentsReducer = (state = [], action) => {
       state = state.filter(student => student.id !== action.student.id);
       break;
     case DELETE_CAMPUS:
-      state = state.filter(student => student.campusId !== action.campus.id);
+      state = state.filter(student => student.campus_id !== action.campus.id);
       break;
     default:
   }
@@ -73,7 +73,7 @@ const getStudents = () => {
   };
 };
 
-const createCampus = (campus, history) => {
+const createCampus = (campus) => {
   return (dispatch) => {
     return axios.post(`/api/campuses`, campus)
       .then(result => result.data)
@@ -91,7 +91,10 @@ const createStudent = (student, history) => {
       .then(student => dispatch({
         type: CREATE_STUDENT,
         student
-      }));
+      }))
+      .then(() => {
+        history.push('/students');
+      });
   };
 };
 
@@ -104,7 +107,7 @@ const deleteCampus = (campus, history) => {
         campus
       }))
       .then(() => {
-        history.push('/');
+        history.push('/campuses');
       });
   };
 };
@@ -116,7 +119,10 @@ const deleteStudent = (student, history) => {
       .then(() => dispatch({
         type: DELETE_STUDENT,
         student
-      }));
+      }))
+      .then(() => {
+        history.push('/students');
+      });
   };
 };
 

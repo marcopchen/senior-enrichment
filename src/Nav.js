@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Campuses from './Campuses';
 
-const Nav = ({ path, students }) => {
+const Nav = ({ path, students, campuses }) => {
   return (
     <div>
       <ul>
@@ -13,14 +12,16 @@ const Nav = ({ path, students }) => {
         {
           path === '/students' ? <li>All Students ({students.length})</li> : <li><Link to="/students">All Students</Link> ({students.length})</li>
         }
+        {
+          path === '/campuses' ? <li>All Campuses ({campuses.length})</li> : <li><Link to="/campuses">All Campuses</Link> ({campuses.length})</li>
+        }
       </ul>
-      <Campuses />
     </div>
   );
 };
 
-const mapStateToProps = ({ students }) => {
-  return { students };
+const mapStateToProps = ({ students, campuses }) => {
+  return { students, campuses };
 };
 
 export default connect(mapStateToProps)(Nav);

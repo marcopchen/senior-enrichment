@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getCategories, getProducts } from './store';
+import { getCampuses, getStudents } from './store';
 import Nav from './Nav';
 import Home from './Home';
-import Products from './Products';
-import Category from './Category';
+import Student from './Student';
+import Students from './Students';
+import StudentCreate from './StudentCreate';
+import Campus from './Campus';
+import Campuses from './Campuses';
+import CampusCreate from './CampusCreate';
 
 class App extends Component {
   componentDidMount() {
-    this.props.getCategories();
-    this.props.getProducts();
+    this.props.getCampuses();
+    this.props.getStudents();
   }
 
   render() {
@@ -21,8 +25,12 @@ class App extends Component {
           <Route render={({ location }) => <Nav path={location.pathname} />} />
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/products" exact component={Products} />
-            <Route path="/categories/:id" exact render={({ match, history }) => <Category id={match.params.id * 1} history={history} />} />
+            <Route path="/campuses" exact component={Campuses} />
+            <Route path="/campuses/new-campus" exact render={({ history }) => <CampusCreate history={history} />} />
+            <Route path="/campuses/:id" exact render={({ match, history }) => <Campus id={match.params.id * 1} history={history} />} />
+            <Route path="/campuses/:id/new-student" exact render={({ match, history }) => <StudentCreate id={match.params.id * 1} history={history} />} />
+            <Route path="/students" exact component={Students} />
+            <Route path="/students/:id" exact render={({ match, history }) => <Student id={match.params.id * 1} history={history} />} />
           </Switch>
         </div>
       </Router>
@@ -32,8 +40,8 @@ class App extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getCategories: () => dispatch(getCategories()),
-    getProducts: () => dispatch(getProducts())
+    getCampuses: () => dispatch(getCampuses()),
+    getStudents: () => dispatch(getStudents())
   };
 };
 
