@@ -3,16 +3,28 @@ import { connect } from 'react-redux';
 import { createStudent } from './store';
 
 class StudentCreate extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    const { student } = this.props;
     this.state = {
-      firstName: '',
-      lastName: '',
-      email: ''
+      firstName: !student ? '' : student.firstName,
+      lastName: !student ? '' : student.lastName,
+      email: !student ? '' : student.email
     };
     this.onChangeForm = this.onChangeForm.bind(this);
     this.onCreateStudent = this.onCreateStudent.bind(this);
   }
+
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.student) {
+  //     const { student } = this.nextProps;
+  //     this.setState({
+  //       firstName: student.firstName,
+  //       lastName: student.lastName,
+  //       email: student.email
+  //     });
+  //   }
+  // }
 
   onChangeForm(ev) {
     const inputName = ev.target.name;
@@ -35,24 +47,25 @@ class StudentCreate extends Component {
 
   render() {
     const { onCreateStudent, onChangeForm } = this;
+    const { firstName, lastName, email } = this.state;
+    const { student } = this.props;
     return (
       <div>
         <h2>New Student</h2>
         <form>
-          <input name="firstName" onChange={onChangeForm} />
-          <input name="lastName" onChange={onChangeForm} />
-          <input name="email" onChange={onChangeForm} />
+          <input name="firstName" onChange={onChangeForm} value={firstName} />
+          <input name="lastName" onChange={onChangeForm} value={lastName} />
+          <input name="email" onChange={onChangeForm} value={email} />
         </form>
-        <button onClick={onCreateStudent}>Add Student</button>
+        <button onClick={onCreateStudent}>{!student ? ('Add') : ('Edit')} Student</button>
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ campuses }, { campus_id }) => {
+const mapStateToProps = ({ students }, { id }) => {
   return {
-    campus: !campus_id ? null : campuses.find(campus => campus.id === campus_id),
-    campus_id
+    student: students && students.find(student => student.id === id)
   };
 };
 

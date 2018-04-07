@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { deleteStudent } from './store';
 
 class Student extends Component {
@@ -19,6 +20,9 @@ class Student extends Component {
     return (
       <div>
         <h2>Student - {student && student.name}</h2>
+        <Link to={`/students/${student && student.id}/edit`}>
+          <button>Edit Student</button>
+        </Link>
         <button onClick={onDeleteStudent}>Delete Student</button>
       </div>
     );
