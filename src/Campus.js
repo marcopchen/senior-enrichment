@@ -21,8 +21,10 @@ class Campus extends Component {
     return (
       <div>
         <h2>Campus - {campus && campus.name}</h2>
-        <p><Link to={`/campuses/${campus_id}/new-student`}>Add Student</Link></p>
-        <StudentList id={campus_id} />
+        <Link to={`/campuses/${campus_id}/new-student`} campus_id={campus_id}>
+          <button>Add Student</button>
+        </Link>
+        <StudentList campus_id={campus_id} />
         <button onClick={onDeleteCampus}>Delete Campus</button>
       </div>
     );

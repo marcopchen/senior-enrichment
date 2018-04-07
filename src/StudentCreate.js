@@ -49,9 +49,10 @@ class StudentCreate extends Component {
   }
 }
 
-const mapStateToProps = ({ campuses }, { id }) => {
+const mapStateToProps = ({ campuses }, { campus_id }) => {
   return {
-    campus: campuses.find(campus => campus.id === id)
+    campus: !campus_id ? null : campuses.find(campus => campus.id === campus_id),
+    campus_id
   };
 };
 

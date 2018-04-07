@@ -23,8 +23,12 @@ const StudentList = ({ students }) => {
   );
 };
 
-const mapStateToProps = ({ students }, { id }) => {
-  return { students: !id ? students : students.filter(student => student.campus_id === id) };
+const mapStateToProps = ({ students }, { campus_id }) => {
+  return {
+    students: !campus_id ? students : students.filter(student => {
+      return student.campus_id === campus_id
+    })
+  };
 };
 
 export default connect(mapStateToProps)(StudentList);

@@ -73,14 +73,17 @@ const getStudents = () => {
   };
 };
 
-const createCampus = (campus) => {
+const createCampus = (campus, history) => {
   return (dispatch) => {
     return axios.post(`/api/campuses`, campus)
       .then(result => result.data)
       .then(campus => dispatch({
         type: CREATE_CAMPUS,
         campus
-      }));
+      }))
+      .then(action => {
+        history.push(`/campuses/${action.campus.id}`);
+      });
   };
 };
 
@@ -92,8 +95,8 @@ const createStudent = (student, history) => {
         type: CREATE_STUDENT,
         student
       }))
-      .then(() => {
-        history.push('/students');
+      .then(action => {
+        history.push(`/students/${action.student.id}`);
       });
   };
 };
