@@ -51,7 +51,7 @@ class StudentCreate extends Component {
     const { student } = this.props;
     return (
       <div>
-        <h2>New Student</h2>
+        <h2>{!student ? ('Add Student') : (`Edit Student - ${student.name}`)}</h2>
         <form>
           <input name="firstName" onChange={onChangeForm} value={firstName} />
           <input name="lastName" onChange={onChangeForm} value={lastName} />

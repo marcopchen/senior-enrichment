@@ -759,6 +759,65 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 /* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(115);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(117);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(51);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(119);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(122);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(125);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(127);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(52);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(25);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(133);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(135);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(137);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(138);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -800,7 +859,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -809,7 +868,7 @@ module.exports = emptyFunction;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.deleteStudent = exports.createStudent = exports.getStudents = exports.deleteCampus = exports.createCampus = exports.getCampuses = undefined;
+exports.deleteStudent = exports.createStudent = exports.getStudents = exports.deleteCampus = exports.updateCampus = exports.createCampus = exports.getCampuses = undefined;
 
 var _redux = __webpack_require__(36);
 
@@ -832,6 +891,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var SET_CAMPUSES = 'SET_CAMPUSES';
 var CREATE_CAMPUS = 'CREATE_CAMPUS';
 var DELETE_CAMPUS = 'DELETE_CAMPUS';
+var UPDATE_CAMPUS = 'UPDATE_CAMPUS';
 
 var SET_STUDENTS = 'SET_STUDENTS';
 var CREATE_STUDENT = 'CREATE_STUDENT';
@@ -851,6 +911,11 @@ var campusesReducer = function campusesReducer() {
     case DELETE_CAMPUS:
       state = state.filter(function (campus) {
         return campus.id !== action.campus.id;
+      });
+      break;
+    case UPDATE_CAMPUS:
+      state = state.map(function (campus) {
+        return campus.id === action.campus.id ? action.campus : campus;
       });
       break;
     default:
@@ -930,6 +995,21 @@ var createCampus = function createCampus(campus, history) {
   };
 };
 
+var updateCampus = function updateCampus(campus, id, history) {
+  return function (dispatch) {
+    return _axios2.default.put('/api/campuses/' + id, campus).then(function (result) {
+      return result.data;
+    }).then(function (campus) {
+      return dispatch({
+        type: UPDATE_CAMPUS,
+        campus: campus
+      });
+    }).then(function (action) {
+      history.push('/campuses/' + action.campus.id);
+    });
+  };
+};
+
 var createStudent = function createStudent(student, history) {
   return function (dispatch) {
     return _axios2.default.post('/api/students', student).then(function (result) {
@@ -980,69 +1060,11 @@ var store = (0, _redux.createStore)(reducer, (0, _redux.applyMiddleware)(_reduxT
 exports.default = store;
 exports.getCampuses = getCampuses;
 exports.createCampus = createCampus;
+exports.updateCampus = updateCampus;
 exports.deleteCampus = deleteCampus;
 exports.getStudents = getStudents;
 exports.createStudent = createStudent;
 exports.deleteStudent = deleteStudent;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(115);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(117);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(51);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(119);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(122);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(125);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(127);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(52);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(25);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(133);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(135);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(137);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_11__matchPath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(138);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /***/ }),
 /* 10 */
@@ -1378,7 +1400,7 @@ module.exports = emptyObject;
 
 
 
-var emptyFunction = __webpack_require__(7);
+var emptyFunction = __webpack_require__(8);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -4170,7 +4192,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(6);
 
-var _reactRouterDom = __webpack_require__(9);
+var _reactRouterDom = __webpack_require__(7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4231,7 +4253,7 @@ var _reactDom = __webpack_require__(59);
 
 var _reactRedux = __webpack_require__(6);
 
-var _store = __webpack_require__(8);
+var _store = __webpack_require__(9);
 
 var _store2 = _interopRequireDefault(_store);
 
@@ -4263,7 +4285,7 @@ var root = document.getElementById('root');
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(10),n=__webpack_require__(14),p=__webpack_require__(7),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
+var m=__webpack_require__(10),n=__webpack_require__(14),p=__webpack_require__(8),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
 typeof Symbol&&Symbol.iterator;function B(a){for(var b=arguments.length-1,e="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);b=Error(e+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 var C={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function D(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}D.prototype.isReactComponent={};D.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?B("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};D.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function E(){}
 E.prototype=D.prototype;function F(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}var G=F.prototype=new E;G.constructor=F;m(G,D.prototype);G.isPureReactComponent=!0;var H={current:null},I=Object.prototype.hasOwnProperty,J={key:!0,ref:!0,__self:!0,__source:!0};
@@ -4304,7 +4326,7 @@ var _assign = __webpack_require__(10);
 var emptyObject = __webpack_require__(14);
 var invariant = __webpack_require__(11);
 var warning = __webpack_require__(15);
-var emptyFunction = __webpack_require__(7);
+var emptyFunction = __webpack_require__(8);
 var checkPropTypes = __webpack_require__(17);
 
 // TODO: this is special because it gets imported during build.
@@ -5762,7 +5784,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(0),m=__webpack_require__(29),A=__webpack_require__(10),C=__webpack_require__(7),ea=__webpack_require__(30),fa=__webpack_require__(31),ha=__webpack_require__(32),ja=__webpack_require__(14);
+var ba=__webpack_require__(0),m=__webpack_require__(29),A=__webpack_require__(10),C=__webpack_require__(8),ea=__webpack_require__(30),fa=__webpack_require__(31),ha=__webpack_require__(32),ja=__webpack_require__(14);
 function D(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}ba?void 0:D("227");
 function ka(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ka.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return ma.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -6080,7 +6102,7 @@ var invariant = __webpack_require__(11);
 var warning = __webpack_require__(15);
 var ExecutionEnvironment = __webpack_require__(29);
 var _assign = __webpack_require__(10);
-var emptyFunction = __webpack_require__(7);
+var emptyFunction = __webpack_require__(8);
 var checkPropTypes = __webpack_require__(17);
 var getActiveElement = __webpack_require__(30);
 var shallowEqual = __webpack_require__(31);
@@ -22837,7 +22859,7 @@ function createProvider() {
 
 
 
-var emptyFunction = __webpack_require__(7);
+var emptyFunction = __webpack_require__(8);
 var invariant = __webpack_require__(11);
 var warning = __webpack_require__(15);
 var assign = __webpack_require__(10);
@@ -23387,7 +23409,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 
 
 
-var emptyFunction = __webpack_require__(7);
+var emptyFunction = __webpack_require__(8);
 var invariant = __webpack_require__(11);
 var ReactPropTypesSecret = __webpack_require__(18);
 
@@ -25436,11 +25458,11 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(9);
+var _reactRouterDom = __webpack_require__(7);
 
 var _reactRedux = __webpack_require__(6);
 
-var _store = __webpack_require__(8);
+var _store = __webpack_require__(9);
 
 var _Nav = __webpack_require__(140);
 
@@ -25458,7 +25480,7 @@ var _Students = __webpack_require__(143);
 
 var _Students2 = _interopRequireDefault(_Students);
 
-var _StudentForm = __webpack_require__(149);
+var _StudentForm = __webpack_require__(144);
 
 var _StudentForm2 = _interopRequireDefault(_StudentForm);
 
@@ -25470,7 +25492,7 @@ var _Campuses = __webpack_require__(146);
 
 var _Campuses2 = _interopRequireDefault(_Campuses);
 
-var _CampusForm = __webpack_require__(150);
+var _CampusForm = __webpack_require__(148);
 
 var _CampusForm2 = _interopRequireDefault(_CampusForm);
 
@@ -25516,26 +25538,26 @@ var App = function (_Component) {
             null,
             _react2.default.createElement(_reactRouterDom.Route, { path: '/', exact: true, component: _Home2.default }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses', exact: true, component: _Campuses2.default }),
-            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/new-campus', exact: true, render: function render(_ref2) {
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/add', exact: true, render: function render(_ref2) {
                 var history = _ref2.history;
                 return _react2.default.createElement(_CampusForm2.default, { history: history });
               } }),
-            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/:id/edit', exact: true, render: function render(_ref3) {
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/:id', exact: true, render: function render(_ref3) {
                 var match = _ref3.match,
                     history = _ref3.history;
-                return _react2.default.createElement(_CampusForm2.default, { id: match.params.id * 1, history: history });
-              } }),
-            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/:id/new-student', exact: true, render: function render(_ref4) {
-                var match = _ref4.match,
-                    history = _ref4.history;
-                return _react2.default.createElement(_StudentForm2.default, { id: match.params.id * 1, history: history });
-              } }),
-            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/:id', exact: true, render: function render(_ref5) {
-                var match = _ref5.match,
-                    history = _ref5.history;
                 return _react2.default.createElement(_Campus2.default, { id: match.params.id * 1, history: history });
               } }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/campuses/:id/edit', exact: true, render: function render(_ref4) {
+                var match = _ref4.match,
+                    history = _ref4.history;
+                return _react2.default.createElement(_CampusForm2.default, { id: match.params.id * 1, history: history });
+              } }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/students', exact: true, component: _Students2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: '/students/add', exact: true, render: function render(_ref5) {
+                var match = _ref5.match,
+                    history = _ref5.history;
+                return _react2.default.createElement(_StudentForm2.default, { id: match.params.id * 1, history: history });
+              } }),
             _react2.default.createElement(_reactRouterDom.Route, { path: '/students/:id', exact: true, render: function render(_ref6) {
                 var match = _ref6.match,
                     history = _ref6.history;
@@ -28544,7 +28566,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(6);
 
-var _reactRouterDom = __webpack_require__(9);
+var _reactRouterDom = __webpack_require__(7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28676,9 +28698,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(6);
 
-var _reactRouterDom = __webpack_require__(9);
+var _reactRouterDom = __webpack_require__(7);
 
-var _store = __webpack_require__(8);
+var _store = __webpack_require__(9);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28722,11 +28744,11 @@ var Student = function (_Component) {
           student && student.name
         ),
         _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/students/' + (student && student.id) + '/edit' },
+          'button',
+          null,
           _react2.default.createElement(
-            'button',
-            null,
+            _reactRouterDom.Link,
+            { to: '/students/' + (student && student.id) + '/edit' },
             'Edit Student'
           )
         ),
@@ -28780,6 +28802,8 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRouterDom = __webpack_require__(7);
+
 var _StudentList = __webpack_require__(55);
 
 var _StudentList2 = _interopRequireDefault(_StudentList);
@@ -28795,6 +28819,15 @@ var Students = function Students() {
       null,
       'Students'
     ),
+    _react2.default.createElement(
+      'button',
+      null,
+      _react2.default.createElement(
+        _reactRouterDom.Link,
+        { to: '/students/add' },
+        'Add Student'
+      )
+    ),
     _react2.default.createElement(_StudentList2.default, null)
   );
 };
@@ -28802,8 +28835,7 @@ var Students = function Students() {
 exports.default = Students;
 
 /***/ }),
-/* 144 */,
-/* 145 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28821,240 +28853,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(6);
 
-var _reactRouterDom = __webpack_require__(9);
-
-var _store = __webpack_require__(8);
-
-var _StudentList = __webpack_require__(55);
-
-var _StudentList2 = _interopRequireDefault(_StudentList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Campus = function (_Component) {
-  _inherits(Campus, _Component);
-
-  function Campus() {
-    _classCallCheck(this, Campus);
-
-    var _this = _possibleConstructorReturn(this, (Campus.__proto__ || Object.getPrototypeOf(Campus)).call(this));
-
-    _this.onDeleteCampus = _this.onDeleteCampus.bind(_this);
-    return _this;
-  }
-
-  _createClass(Campus, [{
-    key: 'onDeleteCampus',
-    value: function onDeleteCampus(ev) {
-      ev.preventDefault();
-      this.props.deleteCampus(this.props.campus);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _props = this.props,
-          campus = _props.campus,
-          campus_id = _props.campus_id;
-      var onDeleteCampus = this.onDeleteCampus;
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h2',
-          null,
-          'Campus - ',
-          campus && campus.name
-        ),
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/campuses/' + campus_id + '/new-student', campus_id: campus_id },
-          _react2.default.createElement(
-            'button',
-            null,
-            'Add Student'
-          )
-        ),
-        _react2.default.createElement(_StudentList2.default, { campus_id: campus_id }),
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/campuses/' + (campus && campus.id) + '/edit' },
-          _react2.default.createElement(
-            'button',
-            null,
-            'Edit Campus'
-          )
-        ),
-        _react2.default.createElement(
-          'button',
-          { onClick: onDeleteCampus },
-          'Delete Campus'
-        )
-      );
-    }
-  }]);
-
-  return Campus;
-}(_react.Component);
-
-var mapStateToProps = function mapStateToProps(_ref, _ref2) {
-  var campuses = _ref.campuses;
-  var id = _ref2.id;
-
-  return {
-    campus: campuses.find(function (campus) {
-      return campus.id === id;
-    }), campus_id: id
-  };
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
-  var history = _ref3.history;
-
-  return {
-    createCampus: function createCampus(campus) {
-      return dispatch((0, _store.createCampus)(campus));
-    },
-    deleteCampus: function deleteCampus(campus) {
-      return dispatch((0, _store.deleteCampus)(campus, history));
-    }
-  };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Campus);
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRouterDom = __webpack_require__(9);
-
-var _CampusList = __webpack_require__(147);
-
-var _CampusList2 = _interopRequireDefault(_CampusList);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Campuses = function Campuses() {
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(
-      'h2',
-      null,
-      'Campuses'
-    ),
-    _react2.default.createElement(
-      _reactRouterDom.Link,
-      { to: '/campuses/new-campus' },
-      _react2.default.createElement(
-        'button',
-        null,
-        'Add Campus'
-      )
-    ),
-    _react2.default.createElement(_CampusList2.default, null)
-  );
-};
-
-exports.default = Campuses;
-
-/***/ }),
-/* 147 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(6);
-
-var _reactRouterDom = __webpack_require__(9);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var CampusList = function CampusList(_ref) {
-  var campuses = _ref.campuses;
-
-  return _react2.default.createElement(
-    'div',
-    null,
-    _react2.default.createElement(
-      'ul',
-      null,
-      campuses.map(function (campus) {
-        return _react2.default.createElement(
-          'li',
-          { key: campus.id },
-          _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/campuses/' + campus.id },
-            campus.name
-          )
-        );
-      })
-    ),
-    !campuses.length && _react2.default.createElement(
-      'p',
-      null,
-      'No campuses registered.'
-    )
-  );
-};
-
-var mapStateToProps = function mapStateToProps(_ref2) {
-  var campuses = _ref2.campuses;
-
-  return { campuses: campuses };
-};
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(CampusList);
-
-/***/ }),
-/* 148 */,
-/* 149 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(6);
-
-var _store = __webpack_require__(8);
+var _store = __webpack_require__(9);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29139,7 +28938,7 @@ var StudentCreate = function (_Component) {
         _react2.default.createElement(
           'h2',
           null,
-          'New Student'
+          !student ? 'Add Student' : 'Edit Student - ' + student.name
         ),
         _react2.default.createElement(
           'form',
@@ -29185,7 +28984,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(StudentCreate);
 
 /***/ }),
-/* 150 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29203,7 +29002,230 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(6);
 
-var _store = __webpack_require__(8);
+var _reactRouterDom = __webpack_require__(7);
+
+var _store = __webpack_require__(9);
+
+var _StudentList = __webpack_require__(55);
+
+var _StudentList2 = _interopRequireDefault(_StudentList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Campus = function (_Component) {
+  _inherits(Campus, _Component);
+
+  function Campus() {
+    _classCallCheck(this, Campus);
+
+    var _this = _possibleConstructorReturn(this, (Campus.__proto__ || Object.getPrototypeOf(Campus)).call(this));
+
+    _this.onDeleteCampus = _this.onDeleteCampus.bind(_this);
+    return _this;
+  }
+
+  _createClass(Campus, [{
+    key: 'onDeleteCampus',
+    value: function onDeleteCampus(ev) {
+      ev.preventDefault();
+      this.props.deleteCampus(this.props.campus);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          campus = _props.campus,
+          campus_id = _props.campus_id;
+      var onDeleteCampus = this.onDeleteCampus;
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'h2',
+          null,
+          'Campus - ',
+          campus && campus.name
+        ),
+        _react2.default.createElement(_StudentList2.default, { campus_id: campus_id }),
+        _react2.default.createElement(
+          'button',
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/campuses/' + (campus && campus.id) + '/edit' },
+            'Edit Campus'
+          )
+        ),
+        _react2.default.createElement(
+          'button',
+          { onClick: onDeleteCampus },
+          'Delete Campus'
+        )
+      );
+    }
+  }]);
+
+  return Campus;
+}(_react.Component);
+
+var mapStateToProps = function mapStateToProps(_ref, _ref2) {
+  var campuses = _ref.campuses;
+  var id = _ref2.id;
+
+  return {
+    campus: campuses.find(function (campus) {
+      return campus.id === id;
+    }), campus_id: id
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
+  var history = _ref3.history;
+
+  return {
+    createCampus: function createCampus(campus) {
+      return dispatch((0, _store.createCampus)(campus));
+    },
+    deleteCampus: function deleteCampus(campus) {
+      return dispatch((0, _store.deleteCampus)(campus, history));
+    }
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Campus);
+
+/***/ }),
+/* 146 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouterDom = __webpack_require__(7);
+
+var _CampusList = __webpack_require__(147);
+
+var _CampusList2 = _interopRequireDefault(_CampusList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Campuses = function Campuses() {
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'h2',
+      null,
+      'Campuses'
+    ),
+    _react2.default.createElement(
+      _reactRouterDom.Link,
+      { to: '/campuses/add' },
+      _react2.default.createElement(
+        'button',
+        null,
+        'Add Campus'
+      )
+    ),
+    _react2.default.createElement(_CampusList2.default, null)
+  );
+};
+
+exports.default = Campuses;
+
+/***/ }),
+/* 147 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(6);
+
+var _reactRouterDom = __webpack_require__(7);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var CampusList = function CampusList(_ref) {
+  var campuses = _ref.campuses;
+
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'ul',
+      null,
+      campuses.map(function (campus) {
+        return _react2.default.createElement(
+          'li',
+          { key: campus.id },
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/campuses/' + campus.id },
+            campus.name
+          )
+        );
+      })
+    ),
+    !campuses.length && _react2.default.createElement(
+      'p',
+      null,
+      'No campuses registered.'
+    )
+  );
+};
+
+var mapStateToProps = function mapStateToProps(_ref2) {
+  var campuses = _ref2.campuses;
+
+  return { campuses: campuses };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(CampusList);
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(6);
+
+var _store = __webpack_require__(9);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29218,18 +29240,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CampusCreate = function (_Component) {
   _inherits(CampusCreate, _Component);
 
-  function CampusCreate(props) {
+  function CampusCreate(_ref) {
+    var campus = _ref.campus;
+
     _classCallCheck(this, CampusCreate);
 
-    var _this = _possibleConstructorReturn(this, (CampusCreate.__proto__ || Object.getPrototypeOf(CampusCreate)).call(this, props));
-
-    var campus = _this.props.campus;
+    var _this = _possibleConstructorReturn(this, (CampusCreate.__proto__ || Object.getPrototypeOf(CampusCreate)).call(this));
 
     _this.state = {
       name: !campus ? '' : campus.name
     };
     _this.onChangeForm = _this.onChangeForm.bind(_this);
     _this.onCreateCampus = _this.onCreateCampus.bind(_this);
+    _this.onUpdateCampus = _this.onUpdateCampus.bind(_this);
     return _this;
   }
 
@@ -29250,9 +29273,19 @@ var CampusCreate = function (_Component) {
       this.props.createCampus({ name: name });
     }
   }, {
+    key: 'onUpdateCampus',
+    value: function onUpdateCampus(ev) {
+      var name = this.state.name;
+      var campus = this.props.campus;
+
+      ev.preventDefault();
+      this.props.updateCampus({ name: name }, campus.id);
+    }
+  }, {
     key: 'render',
     value: function render() {
       var onCreateCampus = this.onCreateCampus,
+          onUpdateCampus = this.onUpdateCampus,
           onChangeForm = this.onChangeForm;
       var campus = this.props.campus;
       var name = this.state.name;
@@ -29263,7 +29296,7 @@ var CampusCreate = function (_Component) {
         _react2.default.createElement(
           'h2',
           null,
-          'New Campus'
+          !campus ? 'Add Campus' : 'Edit Campus - ' + campus.name
         ),
         _react2.default.createElement(
           'form',
@@ -29272,7 +29305,7 @@ var CampusCreate = function (_Component) {
         ),
         _react2.default.createElement(
           'button',
-          { onClick: onCreateCampus },
+          { onClick: !campus ? onCreateCampus : onUpdateCampus },
           !campus ? 'Add' : 'Edit',
           ' Campus'
         )
@@ -29283,23 +29316,24 @@ var CampusCreate = function (_Component) {
   return CampusCreate;
 }(_react.Component);
 
-var mapStateToProps = function mapStateToProps(_ref, _ref2) {
-  var campuses = _ref.campuses;
-  var id = _ref2.id;
+var mapStateToProps = function mapStateToProps(_ref2, _ref3) {
+  var campuses = _ref2.campuses;
+  var id = _ref3.id;
 
-  return {
-    campus: campuses && campuses.find(function (campus) {
+  return { campus: campuses && campuses.find(function (campus) {
       return campus.id === id;
-    })
-  };
+    }) };
 };
 
-var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
-  var history = _ref3.history;
+var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref4) {
+  var history = _ref4.history;
 
   return {
     createCampus: function createCampus(campus) {
       return dispatch((0, _store.createCampus)(campus, history));
+    },
+    updateCampus: function updateCampus(campus, id) {
+      return dispatch((0, _store.updateCampus)(campus, id, history));
     }
   };
 };

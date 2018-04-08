@@ -6,6 +6,7 @@ import axios from 'axios';
 const SET_CAMPUSES = 'SET_CAMPUSES';
 const CREATE_CAMPUS = 'CREATE_CAMPUS';
 const DELETE_CAMPUS = 'DELETE_CAMPUS';
+const UPDATE_CAMPUS = 'UPDATE_CAMPUS';
 
 const SET_STUDENTS = 'SET_STUDENTS';
 const CREATE_STUDENT = 'CREATE_STUDENT';
@@ -21,6 +22,11 @@ const campusesReducer = (state = [], action) => {
       break;
     case DELETE_CAMPUS:
       state = state.filter(campus => campus.id !== action.campus.id);
+      break;
+    case UPDATE_CAMPUS:
+      state = state.map(campus => {
+        return campus.id === action.campus.id ? action.campus : campus;
+      });
       break;
     default:
   }
@@ -87,6 +93,20 @@ const createCampus = (campus, history) => {
   };
 };
 
+const updateCampus = (campus, id, history) => {
+  return (dispatch) => {
+    return axios.put(`/api/campuses/${id}`, campus)
+      .then(result => result.data)
+      .then(campus => dispatch({
+        type: UPDATE_CAMPUS,
+        campus
+      }))
+      .then(action => {
+        history.push(`/campuses/${action.campus.id}`);
+      });
+  };
+};
+
 const createStudent = (student, history) => {
   return (dispatch) => {
     return axios.post(`/api/students`, student)
@@ -132,4 +152,4 @@ const deleteStudent = (student, history) => {
 const store = createStore(reducer, applyMiddleware(thunk, logger));
 
 export default store;
-export { getCampuses, createCampus, deleteCampus, getStudents, createStudent, deleteStudent };
+export { getCampuses, createCampus, updateCampus, deleteCampus, getStudents, createStudent, deleteStudent };

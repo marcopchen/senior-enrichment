@@ -20,9 +20,11 @@ class Student extends Component {
     return (
       <div>
         <h2>Student - {student && student.name}</h2>
-        <Link to={`/students/${student && student.id}/edit`}>
-          <button>Edit Student</button>
-        </Link>
+        <button>
+          <Link to={`/students/${student && student.id}/edit`}>
+            Edit Student
+          </Link>
+        </button>
         <button onClick={onDeleteStudent}>Delete Student</button>
       </div>
     );
