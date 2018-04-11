@@ -5,11 +5,12 @@ import axios from 'axios';
 
 const SET_CAMPUSES = 'SET_CAMPUSES';
 const CREATE_CAMPUS = 'CREATE_CAMPUS';
-const DELETE_CAMPUS = 'DELETE_CAMPUS';
 const UPDATE_CAMPUS = 'UPDATE_CAMPUS';
+const DELETE_CAMPUS = 'DELETE_CAMPUS';
 
 const SET_STUDENTS = 'SET_STUDENTS';
 const CREATE_STUDENT = 'CREATE_STUDENT';
+const UPDATE_STUDENT = 'UPDATE_STUDENT';
 const DELETE_STUDENT = 'DELETE_STUDENT';
 
 const campusesReducer = (state = [], action) => {
@@ -46,6 +47,11 @@ const studentsReducer = (state = [], action) => {
       break;
     case DELETE_CAMPUS:
       state = state.filter(student => student.campus_id !== action.campus.id);
+      break;
+    case UPDATE_STUDENT:
+      state = state.map(student => {
+        return student.id === action.student.id ? action.student : student;
+      });
       break;
     default:
   }
@@ -93,6 +99,20 @@ const createCampus = (campus, history) => {
   };
 };
 
+const createStudent = (student, history) => {
+  return (dispatch) => {
+    return axios.post(`/api/students`, student)
+      .then(result => result.data)
+      .then(student => dispatch({
+        type: CREATE_STUDENT,
+        student
+      }))
+      .then(action => {
+        history.push(`/students/${action.student.id}`);
+      });
+  };
+};
+
 const updateCampus = (campus, id, history) => {
   return (dispatch) => {
     return axios.put(`/api/campuses/${id}`, campus)
@@ -107,16 +127,18 @@ const updateCampus = (campus, id, history) => {
   };
 };
 
-const createStudent = (student, history) => {
+const updateStudent = (student, id, campus, history) => {
   return (dispatch) => {
-    return axios.post(`/api/students`, student)
+    return axios.put(`/api/students/${id}`, student)
       .then(result => result.data)
       .then(student => dispatch({
-        type: CREATE_STUDENT,
+        type: UPDATE_STUDENT,
         student
       }))
       .then(action => {
-        history.push(`/students/${action.student.id}`);
+        if (!campus) {
+          history.push(`/students/${action.student.id}`);
+        }
       });
   };
 };
@@ -152,4 +174,4 @@ const deleteStudent = (student, history) => {
 const store = createStore(reducer, applyMiddleware(thunk, logger));
 
 export default store;
-export { getCampuses, createCampus, updateCampus, deleteCampus, getStudents, createStudent, deleteStudent };
+export { getCampuses, createCampus, updateCampus, deleteCampus, getStudents, createStudent, updateStudent, deleteStudent };

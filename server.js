@@ -24,6 +24,18 @@ app.get('/api/students', (req, res, next) => {
     .catch(next);
 });
 
+app.get('/api/campuses/:id', (req, res, next) => {
+  Campus.findById(req.params.id)
+    .then(campus => res.send(campus))
+    .catch(next);
+});
+
+app.get('/api/students/:id', (req, res, next) => {
+  Student.findById(req.params.id)
+    .then(student => res.send(student))
+    .catch(next);
+});
+
 app.post('/api/campuses', (req, res, next) => {
   Campus.create(req.body)
     .then(campus => res.send(campus))

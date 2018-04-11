@@ -6,11 +6,11 @@ const Students = () => {
   return (
     <div>
       <h2>Students</h2>
-      <button>
-        <Link to={`/students/add`}>
-          Add Student
-          </Link>
-      </button>
+      <div className='container'>
+        <button type='button' className='btn btn-default'>
+          <Link to='/students/add'>Add Student</Link>
+        </button>
+      </div>
       <StudentList />
     </div>
   );

@@ -31,8 +31,8 @@ const Student = conn.define('student', {
     defaultValue: '/images/default-photo.jpg'
   },
   gpa: {
-    type: Sequelize.STRING,
-    defaultValue: '4.0'
+    type: Sequelize.FLOAT,
+    defaultValue: 4.0
   }
 }, {
     scopes: {

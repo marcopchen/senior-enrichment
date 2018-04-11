@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 
 const CampusList = ({ campuses }) => {
   return (
-    <div>
-      <ul>
+    <div className='container'>
+      <ul className='list-group'>
         {
           campuses.map(campus => {
             return (
-              <li key={campus.id}>
+              <li key={campus.id} className='list-group-item'>
                 <Link to={`/campuses/${campus.id}`}>
                   {campus.name}
                 </Link>
@@ -18,7 +18,7 @@ const CampusList = ({ campuses }) => {
           })
         }
       </ul>
-      {!campuses.length && <p>No campuses registered.</p>}
+      {!campuses.length && <div className='alert'>No campuses registered.</div>}
     </div>
   );
 };

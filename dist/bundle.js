@@ -868,7 +868,7 @@ module.exports = emptyFunction;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.deleteStudent = exports.createStudent = exports.getStudents = exports.deleteCampus = exports.updateCampus = exports.createCampus = exports.getCampuses = undefined;
+exports.deleteStudent = exports.updateStudent = exports.createStudent = exports.getStudents = exports.deleteCampus = exports.updateCampus = exports.createCampus = exports.getCampuses = undefined;
 
 var _redux = __webpack_require__(36);
 
@@ -890,11 +890,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var SET_CAMPUSES = 'SET_CAMPUSES';
 var CREATE_CAMPUS = 'CREATE_CAMPUS';
-var DELETE_CAMPUS = 'DELETE_CAMPUS';
 var UPDATE_CAMPUS = 'UPDATE_CAMPUS';
+var DELETE_CAMPUS = 'DELETE_CAMPUS';
 
 var SET_STUDENTS = 'SET_STUDENTS';
 var CREATE_STUDENT = 'CREATE_STUDENT';
+var UPDATE_STUDENT = 'UPDATE_STUDENT';
 var DELETE_STUDENT = 'DELETE_STUDENT';
 
 var campusesReducer = function campusesReducer() {
@@ -942,6 +943,11 @@ var studentsReducer = function studentsReducer() {
     case DELETE_CAMPUS:
       state = state.filter(function (student) {
         return student.campus_id !== action.campus.id;
+      });
+      break;
+    case UPDATE_STUDENT:
+      state = state.map(function (student) {
+        return student.id === action.student.id ? action.student : student;
       });
       break;
     default:
@@ -995,6 +1001,21 @@ var createCampus = function createCampus(campus, history) {
   };
 };
 
+var createStudent = function createStudent(student, history) {
+  return function (dispatch) {
+    return _axios2.default.post('/api/students', student).then(function (result) {
+      return result.data;
+    }).then(function (student) {
+      return dispatch({
+        type: CREATE_STUDENT,
+        student: student
+      });
+    }).then(function (action) {
+      history.push('/students/' + action.student.id);
+    });
+  };
+};
+
 var updateCampus = function updateCampus(campus, id, history) {
   return function (dispatch) {
     return _axios2.default.put('/api/campuses/' + id, campus).then(function (result) {
@@ -1010,17 +1031,19 @@ var updateCampus = function updateCampus(campus, id, history) {
   };
 };
 
-var createStudent = function createStudent(student, history) {
+var updateStudent = function updateStudent(student, id, campus, history) {
   return function (dispatch) {
-    return _axios2.default.post('/api/students', student).then(function (result) {
+    return _axios2.default.put('/api/students/' + id, student).then(function (result) {
       return result.data;
     }).then(function (student) {
       return dispatch({
-        type: CREATE_STUDENT,
+        type: UPDATE_STUDENT,
         student: student
       });
     }).then(function (action) {
-      history.push('/students/' + action.student.id);
+      if (!campus) {
+        history.push('/students/' + action.student.id);
+      }
     });
   };
 };
@@ -1064,6 +1087,7 @@ exports.updateCampus = updateCampus;
 exports.deleteCampus = deleteCampus;
 exports.getStudents = getStudents;
 exports.createStudent = createStudent;
+exports.updateStudent = updateStudent;
 exports.deleteStudent = deleteStudent;
 
 /***/ }),
@@ -4201,18 +4225,39 @@ var StudentList = function StudentList(_ref) {
 
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'container' },
     _react2.default.createElement(
-      'ul',
-      null,
-      students && students.map(function (student) {
+      'div',
+      { className: 'user-list' },
+      students && students.sort(function (a, b) {
+        if (a.firstName < b.firstName) return -1;
+        if (a.firstName > b.firstName) return 1;
+        return 0;
+      }).map(function (student) {
         return _react2.default.createElement(
-          'li',
-          { key: student.id },
+          'div',
+          { className: 'list-group-item min-content user-item', key: student.id },
           _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/students/' + student.id },
-            student.name
+            'div',
+            { className: 'media' },
+            _react2.default.createElement(
+              'div',
+              { className: 'media-left media-middle icon-container' },
+              _react2.default.createElement('img', { className: 'media-object img-circle', src: student.imageURL })
+            ),
+            _react2.default.createElement(
+              _reactRouterDom.Link,
+              { to: '/students/' + student.id, className: 'media-body' },
+              _react2.default.createElement(
+                'h5',
+                { className: 'media-heading tucked' },
+                _react2.default.createElement(
+                  'span',
+                  null,
+                  student.name
+                )
+              )
+            )
           )
         );
       })
@@ -25522,7 +25567,6 @@ var App = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      console.log(this);
       return _react2.default.createElement(
         _reactRouterDom.HashRouter,
         null,
@@ -28579,56 +28623,71 @@ var Nav = function Nav(_ref) {
     'div',
     null,
     _react2.default.createElement(
-      'ul',
-      null,
-      path === '/' ? _react2.default.createElement(
-        'li',
-        null,
-        'Home'
-      ) : _react2.default.createElement(
-        'li',
-        null,
+      'nav',
+      { className: 'navbar navbar-default' },
+      _react2.default.createElement(
+        'div',
+        { className: 'container' },
         _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/' },
-          'Home'
+          'div',
+          { className: 'navbar-header' },
+          _react2.default.createElement(
+            'button',
+            {
+              type: 'button',
+              className: 'navbar-toggle collapsed',
+              'data-toggle': 'collapse',
+              'data-target': '.navbar-collapse' },
+            _react2.default.createElement('span', { className: 'icon-bar' }),
+            _react2.default.createElement('span', { className: 'icon-bar' }),
+            _react2.default.createElement('span', { className: 'icon-bar' })
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'collapse navbar-collapse' },
+          _react2.default.createElement(
+            'ul',
+            { className: 'nav navbar-nav' },
+
+            // path === '/' ? <img src="/images/logo.png" /> :
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                _reactRouterDom.NavLink,
+                { to: '/', exact: true, activeClassName: 'active' },
+                'Home'
+              )
+            ),
+
+            // path === '/students' ? <li>All Students ({students.length})</li> :
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                _reactRouterDom.NavLink,
+                { to: '/students', activeClassName: 'active' },
+                'Students (',
+                students.length,
+                ')'
+              )
+            ),
+
+            // path === '/campuses' ? <li>All Campuses ({campuses.length})</li> :
+            _react2.default.createElement(
+              'li',
+              null,
+              _react2.default.createElement(
+                _reactRouterDom.NavLink,
+                { to: '/campuses', activeClassName: 'active' },
+                'Campuses (',
+                campuses.length,
+                ')'
+              )
+            )
+          )
         )
-      ),
-      path === '/students' ? _react2.default.createElement(
-        'li',
-        null,
-        'All Students (',
-        students.length,
-        ')'
-      ) : _react2.default.createElement(
-        'li',
-        null,
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/students' },
-          'All Students'
-        ),
-        ' (',
-        students.length,
-        ')'
-      ),
-      path === '/campuses' ? _react2.default.createElement(
-        'li',
-        null,
-        'All Campuses (',
-        campuses.length,
-        ')'
-      ) : _react2.default.createElement(
-        'li',
-        null,
-        _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/campuses' },
-          'All Campuses'
-        ),
-        ' (',
-        campuses.length,
-        ')'
       )
     )
   );
@@ -28704,6 +28763,8 @@ var _store = __webpack_require__(9);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -28718,11 +28779,38 @@ var Student = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Student.__proto__ || Object.getPrototypeOf(Student)).call(this));
 
+    _this.state = {
+      campus_id: 0
+    };
+    _this.onChangeForm = _this.onChangeForm.bind(_this);
+    _this.onUpdateStudent = _this.onUpdateStudent.bind(_this);
     _this.onDeleteStudent = _this.onDeleteStudent.bind(_this);
     return _this;
   }
 
   _createClass(Student, [{
+    key: 'onChangeForm',
+    value: function onChangeForm(ev) {
+      var inputName = ev.target.name;
+      var inputValue = ev.target.value;
+      ev.preventDefault();
+      this.setState(_defineProperty({}, inputName, inputValue));
+    }
+  }, {
+    key: 'onUpdateStudent',
+    value: function onUpdateStudent(ev) {
+      var campus_id = this.state.campus_id;
+      var _props = this.props,
+          student = _props.student,
+          campus = _props.campus;
+
+      ev.preventDefault();
+      this.props.updateStudent({ campus_id: campus_id }, student.id, campus);
+      // this.setState({
+      //   campus: campuses && campuses.find(_campus => _campus.id === campus_id)
+      // });
+    }
+  }, {
     key: 'onDeleteStudent',
     value: function onDeleteStudent(ev) {
       ev.preventDefault();
@@ -28731,8 +28819,14 @@ var Student = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var student = this.props.student;
-      var onDeleteStudent = this.onDeleteStudent;
+      var campus_id = this.state.campus_id;
+      var _props2 = this.props,
+          student = _props2.student,
+          campuses = _props2.campuses,
+          campus = _props2.campus;
+      var onChangeForm = this.onChangeForm,
+          onUpdateStudent = this.onUpdateStudent,
+          onDeleteStudent = this.onDeleteStudent;
 
       return _react2.default.createElement(
         'div',
@@ -28744,8 +28838,56 @@ var Student = function (_Component) {
           student && student.name
         ),
         _react2.default.createElement(
-          'button',
+          'p',
           null,
+          'Campus: ',
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/campuses/' + (campus && campus.id) },
+            campus && campus.name
+          )
+        ),
+        _react2.default.createElement(
+          'p',
+          null,
+          'E-mail: ',
+          student && student.email
+        ),
+        _react2.default.createElement(
+          'p',
+          null,
+          'GPA: ',
+          student && student.gpa
+        ),
+        _react2.default.createElement(
+          'form',
+          null,
+          _react2.default.createElement(
+            'select',
+            { name: 'campus_id', onChange: onChangeForm },
+            _react2.default.createElement(
+              'option',
+              { disabled: campus_id },
+              '- choose -'
+            ),
+            campuses && campuses.map(function (_campus) {
+              return _react2.default.createElement(
+                'option',
+                { key: _campus.id, value: _campus.id, disabled: campus && campus.id === _campus.id },
+                _campus.name
+              );
+            })
+          ),
+          _react2.default.createElement(
+            'button',
+            { onClick: onUpdateStudent, disabled: !campus_id, type: 'button' },
+            !student ? 'Add to' : 'Switch',
+            ' Campus'
+          )
+        ),
+        _react2.default.createElement(
+          'button',
+          { type: 'button', className: 'btn btn-default' },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/students/' + (student && student.id) + '/edit' },
@@ -28754,7 +28896,7 @@ var Student = function (_Component) {
         ),
         _react2.default.createElement(
           'button',
-          { onClick: onDeleteStudent },
+          { onClick: onDeleteStudent, type: 'button', className: 'btn btn-danger' },
           'Delete Student'
         )
       );
@@ -28765,14 +28907,17 @@ var Student = function (_Component) {
 }(_react.Component);
 
 var mapStateToProps = function mapStateToProps(_ref, _ref2) {
-  var students = _ref.students;
+  var students = _ref.students,
+      campuses = _ref.campuses;
   var id = _ref2.id;
 
-  return {
-    student: students.find(function (student) {
-      return student.id === id;
-    })
-  };
+  var student = students.find(function (_student) {
+    return _student.id === id;
+  });
+  var campus = student && campuses.find(function (_campus) {
+    return _campus.id === student.campus_id;
+  });
+  return { student: student, campuses: campuses, campus: campus };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
@@ -28781,6 +28926,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
   return {
     deleteStudent: function deleteStudent(student) {
       return dispatch((0, _store.deleteStudent)(student, history));
+    },
+    updateStudent: function updateStudent(student, id, campus) {
+      return dispatch((0, _store.updateStudent)(student, id, campus, history));
     }
   };
 };
@@ -28820,12 +28968,16 @@ var Students = function Students() {
       'Students'
     ),
     _react2.default.createElement(
-      'button',
-      null,
+      'div',
+      { className: 'container' },
       _react2.default.createElement(
-        _reactRouterDom.Link,
-        { to: '/students/add' },
-        'Add Student'
+        'button',
+        { type: 'button', className: 'btn btn-default' },
+        _react2.default.createElement(
+          _reactRouterDom.Link,
+          { to: '/students/add' },
+          'Add Student'
+        )
       )
     ),
     _react2.default.createElement(_StudentList2.default, null)
@@ -28878,60 +29030,88 @@ var StudentCreate = function (_Component) {
     _this.state = {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
-      email: !student ? '' : student.email
+      email: !student ? '' : student.email,
+      gpa: !student ? '' : student.gpa,
+      inputEdited: {}
     };
     _this.onChangeForm = _this.onChangeForm.bind(_this);
     _this.onCreateStudent = _this.onCreateStudent.bind(_this);
+    _this.onUpdateStudent = _this.onUpdateStudent.bind(_this);
     return _this;
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.student) {
-  //     const { student } = this.nextProps;
-  //     this.setState({
-  //       firstName: student.firstName,
-  //       lastName: student.lastName,
-  //       email: student.email
-  //     });
-  //   }
-  // }
-
   _createClass(StudentCreate, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var student = nextProps.student;
+
+      this.setState({
+        firstName: !student ? '' : student.firstName,
+        lastName: !student ? '' : student.lastName,
+        email: !student ? '' : student.email,
+        gpa: !student ? '' : student.gpa
+      });
+    }
+  }, {
     key: 'onChangeForm',
     value: function onChangeForm(ev) {
+      var _setState;
+
       var inputName = ev.target.name;
       var inputValue = ev.target.value;
+      var inputEdited = this.state.inputEdited;
+
       ev.preventDefault();
-      this.setState(_defineProperty({}, inputName, inputValue));
+      inputEdited[inputName] = true;
+      this.setState((_setState = {}, _defineProperty(_setState, inputName, inputValue), _defineProperty(_setState, 'inputEdited', inputEdited), _setState));
     }
   }, {
     key: 'onCreateStudent',
     value: function onCreateStudent(ev) {
-      var campus = this.props.campus;
       var _state = this.state,
           firstName = _state.firstName,
           lastName = _state.lastName,
-          email = _state.email;
+          email = _state.email,
+          gpa = _state.gpa;
 
       ev.preventDefault();
       this.props.createStudent({
         firstName: firstName,
         lastName: lastName,
         email: email,
-        campus_id: campus && campus.id
+        gpa: gpa
       });
+    }
+  }, {
+    key: 'onUpdateStudent',
+    value: function onUpdateStudent(ev) {
+      var _state2 = this.state,
+          firstName = _state2.firstName,
+          lastName = _state2.lastName,
+          email = _state2.email,
+          gpa = _state2.gpa;
+      var student = this.props.student;
+
+      ev.preventDefault();
+      this.props.updateStudent({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        gpa: gpa
+      }, student.id, null);
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var onCreateStudent = this.onCreateStudent,
+          onUpdateStudent = this.onUpdateStudent,
           onChangeForm = this.onChangeForm;
-      var _state2 = this.state,
-          firstName = _state2.firstName,
-          lastName = _state2.lastName,
-          email = _state2.email;
+      var inputEdited = this.state.inputEdited;
       var student = this.props.student;
 
+      var fields = { firstName: 'First Name', lastName: 'Last Name', email: 'E-mail' };
       return _react2.default.createElement(
         'div',
         null,
@@ -28940,19 +29120,43 @@ var StudentCreate = function (_Component) {
           null,
           !student ? 'Add Student' : 'Edit Student - ' + student.name
         ),
+        Object.keys(fields).map(function (field) {
+          return _react2.default.createElement(
+            'div',
+            { key: field, className: 'form-group' },
+            _react2.default.createElement(
+              'label',
+              null,
+              fields[field]
+            ),
+            _react2.default.createElement('input', { name: '' + field, onChange: onChangeForm, value: _this2.state[field], className: 'form-control' })
+          );
+        }),
         _react2.default.createElement(
-          'form',
-          null,
-          _react2.default.createElement('input', { name: 'firstName', onChange: onChangeForm, value: firstName }),
-          _react2.default.createElement('input', { name: 'lastName', onChange: onChangeForm, value: lastName }),
-          _react2.default.createElement('input', { name: 'email', onChange: onChangeForm, value: email })
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'label',
+            null,
+            'GPA'
+          ),
+          _react2.default.createElement('input', { name: 'gpa', onChange: onChangeForm, value: this.state.gpa, className: 'form-control', maxLength: '3', step: '0.1', min: '0.0', max: '4.0' })
         ),
         _react2.default.createElement(
           'button',
-          { onClick: onCreateStudent },
+          { onClick: !student ? onCreateStudent : onUpdateStudent, type: 'button', className: 'btn btn-primary', disabled: Object.keys(fields).some(function (field) {
+              return !_this2.state[field].length;
+            }) },
           !student ? 'Add' : 'Edit',
           ' Student'
-        )
+        ),
+        Object.keys(fields).map(function (field) {
+          return inputEdited[field] && !_this2.state[field].length && _react2.default.createElement(
+            'div',
+            { key: field, className: 'alert alert-danger' },
+            'Student\'s ' + fields[field].toLowerCase() + ' must be entered.'
+          );
+        })
       );
     }
   }]);
@@ -28964,11 +29168,9 @@ var mapStateToProps = function mapStateToProps(_ref, _ref2) {
   var students = _ref.students;
   var id = _ref2.id;
 
-  return {
-    student: students && students.find(function (student) {
+  return { student: students && students.find(function (student) {
       return student.id === id;
-    })
-  };
+    }) };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
@@ -28977,6 +29179,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
   return {
     createStudent: function createStudent(student) {
       return dispatch((0, _store.createStudent)(student, history));
+    },
+    updateStudent: function updateStudent(student, id, campus) {
+      return dispatch((0, _store.updateStudent)(student, id, campus, history));
     }
   };
 };
@@ -29012,6 +29217,8 @@ var _StudentList2 = _interopRequireDefault(_StudentList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -29026,23 +29233,51 @@ var Campus = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Campus.__proto__ || Object.getPrototypeOf(Campus)).call(this));
 
+    _this.state = {
+      student_id: 0
+    };
+    _this.onChangeForm = _this.onChangeForm.bind(_this);
     _this.onDeleteCampus = _this.onDeleteCampus.bind(_this);
+    _this.onUpdateStudent = _this.onUpdateStudent.bind(_this);
     return _this;
   }
 
   _createClass(Campus, [{
+    key: 'onChangeForm',
+    value: function onChangeForm(ev) {
+      var inputName = ev.target.name;
+      var inputValue = ev.target.value;
+      ev.preventDefault();
+      this.setState(_defineProperty({}, inputName, inputValue));
+    }
+  }, {
     key: 'onDeleteCampus',
     value: function onDeleteCampus(ev) {
       ev.preventDefault();
       this.props.deleteCampus(this.props.campus);
     }
   }, {
+    key: 'onUpdateStudent',
+    value: function onUpdateStudent(ev) {
+      var _props = this.props,
+          campus_id = _props.campus_id,
+          campus = _props.campus;
+      var student_id = this.state.student_id;
+
+      ev.preventDefault();
+      this.props.updateStudent({ campus_id: campus_id }, student_id, campus);
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _props = this.props,
-          campus = _props.campus,
-          campus_id = _props.campus_id;
-      var onDeleteCampus = this.onDeleteCampus;
+      var student_id = this.state.student_id;
+      var _props2 = this.props,
+          campus = _props2.campus,
+          students = _props2.students,
+          campus_id = _props2.campus_id;
+      var onDeleteCampus = this.onDeleteCampus,
+          onUpdateStudent = this.onUpdateStudent,
+          onChangeForm = this.onChangeForm;
 
       return _react2.default.createElement(
         'div',
@@ -29053,10 +29288,41 @@ var Campus = function (_Component) {
           'Campus - ',
           campus && campus.name
         ),
+        _react2.default.createElement(
+          'p',
+          null,
+          'Description: ',
+          campus && campus.description
+        ),
+        _react2.default.createElement(
+          'select',
+          { name: 'student_id', onChange: onChangeForm },
+          _react2.default.createElement(
+            'option',
+            { disabled: student_id },
+            '- choose -'
+          ),
+          students && students.sort(function (a, b) {
+            if (a.firstName < b.firstName) return -1;
+            if (a.firstName > b.firstName) return 1;
+            return 0;
+          }).map(function (student) {
+            return _react2.default.createElement(
+              'option',
+              { key: student.id, value: student.id, disabled: student.campus_id === campus_id },
+              student.name
+            );
+          })
+        ),
+        _react2.default.createElement(
+          'button',
+          { onClick: onUpdateStudent, disabled: !student_id, type: 'button' },
+          'Add Student'
+        ),
         _react2.default.createElement(_StudentList2.default, { campus_id: campus_id }),
         _react2.default.createElement(
           'button',
-          null,
+          { type: 'button', className: 'btn btn-default' },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/campuses/' + (campus && campus.id) + '/edit' },
@@ -29065,7 +29331,7 @@ var Campus = function (_Component) {
         ),
         _react2.default.createElement(
           'button',
-          { onClick: onDeleteCampus },
+          { onClick: onDeleteCampus, type: 'button', className: 'btn btn-danger' },
           'Delete Campus'
         )
       );
@@ -29076,25 +29342,25 @@ var Campus = function (_Component) {
 }(_react.Component);
 
 var mapStateToProps = function mapStateToProps(_ref, _ref2) {
-  var campuses = _ref.campuses;
+  var campuses = _ref.campuses,
+      students = _ref.students;
   var id = _ref2.id;
 
-  return {
-    campus: campuses.find(function (campus) {
-      return campus.id === id;
-    }), campus_id: id
-  };
+  var campus = campuses.find(function (campus) {
+    return campus.id === id;
+  });
+  return { campus: campus, students: students, campus_id: id };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
   var history = _ref3.history;
 
   return {
-    createCampus: function createCampus(campus) {
-      return dispatch((0, _store.createCampus)(campus));
-    },
     deleteCampus: function deleteCampus(campus) {
       return dispatch((0, _store.deleteCampus)(campus, history));
+    },
+    updateStudent: function updateStudent(student, id, campus) {
+      return dispatch((0, _store.updateStudent)(student, id, campus, history));
     }
   };
 };
@@ -29134,12 +29400,16 @@ var Campuses = function Campuses() {
       'Campuses'
     ),
     _react2.default.createElement(
-      _reactRouterDom.Link,
-      { to: '/campuses/add' },
+      'div',
+      { className: 'container' },
       _react2.default.createElement(
         'button',
-        null,
-        'Add Campus'
+        { type: 'button', className: 'btn btn-default' },
+        _react2.default.createElement(
+          _reactRouterDom.Link,
+          { to: '/campuses/add' },
+          'Add Campus'
+        )
       )
     ),
     _react2.default.createElement(_CampusList2.default, null)
@@ -29174,14 +29444,14 @@ var CampusList = function CampusList(_ref) {
 
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'container' },
     _react2.default.createElement(
       'ul',
-      null,
+      { className: 'list-group' },
       campuses.map(function (campus) {
         return _react2.default.createElement(
           'li',
-          { key: campus.id },
+          { key: campus.id, className: 'list-group-item' },
           _react2.default.createElement(
             _reactRouterDom.Link,
             { to: '/campuses/' + campus.id },
@@ -29191,8 +29461,8 @@ var CampusList = function CampusList(_ref) {
       })
     ),
     !campuses.length && _react2.default.createElement(
-      'p',
-      null,
+      'div',
+      { className: 'alert' },
       'No campuses registered.'
     )
   );
@@ -29248,7 +29518,10 @@ var CampusCreate = function (_Component) {
     var _this = _possibleConstructorReturn(this, (CampusCreate.__proto__ || Object.getPrototypeOf(CampusCreate)).call(this));
 
     _this.state = {
-      name: !campus ? '' : campus.name
+      name: !campus ? '' : campus.name,
+      imageURL: !campus ? '' : campus.imageURL,
+      description: !campus ? '' : campus.description,
+      inputEdited: {}
     };
     _this.onChangeForm = _this.onChangeForm.bind(_this);
     _this.onCreateCampus = _this.onCreateCampus.bind(_this);
@@ -29257,29 +29530,51 @@ var CampusCreate = function (_Component) {
   }
 
   _createClass(CampusCreate, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var campus = nextProps.campus;
+
+      this.setState({
+        name: !campus ? '' : campus.name,
+        imageURL: !campus ? '' : campus.imageURL,
+        description: !campus ? '' : campus.description
+      });
+    }
+  }, {
     key: 'onChangeForm',
     value: function onChangeForm(ev) {
+      var _setState;
+
       var inputName = ev.target.name;
       var inputValue = ev.target.value;
+      var inputEdited = this.state.inputEdited;
+
       ev.preventDefault();
-      this.setState(_defineProperty({}, inputName, inputValue));
+      inputEdited[inputName] = true;
+      this.setState((_setState = {}, _defineProperty(_setState, inputName, inputValue), _defineProperty(_setState, 'inputEdited', inputEdited), _setState));
     }
   }, {
     key: 'onCreateCampus',
     value: function onCreateCampus(ev) {
-      var name = this.state.name;
+      var _state = this.state,
+          name = _state.name,
+          imageURL = _state.imageURL,
+          description = _state.description;
 
       ev.preventDefault();
-      this.props.createCampus({ name: name });
+      this.props.createCampus({ name: name, imageURL: imageURL, description: description });
     }
   }, {
     key: 'onUpdateCampus',
     value: function onUpdateCampus(ev) {
-      var name = this.state.name;
+      var _state2 = this.state,
+          name = _state2.name,
+          imageURL = _state2.imageURL,
+          description = _state2.description;
       var campus = this.props.campus;
 
       ev.preventDefault();
-      this.props.updateCampus({ name: name }, campus.id);
+      this.props.updateCampus({ name: name, imageURL: imageURL, description: description }, campus.id);
     }
   }, {
     key: 'render',
@@ -29287,8 +29582,12 @@ var CampusCreate = function (_Component) {
       var onCreateCampus = this.onCreateCampus,
           onUpdateCampus = this.onUpdateCampus,
           onChangeForm = this.onChangeForm;
+      var _state3 = this.state,
+          name = _state3.name,
+          imageURL = _state3.imageURL,
+          description = _state3.description,
+          inputEdited = _state3.inputEdited;
       var campus = this.props.campus;
-      var name = this.state.name;
 
       return _react2.default.createElement(
         'div',
@@ -29299,15 +29598,45 @@ var CampusCreate = function (_Component) {
           !campus ? 'Add Campus' : 'Edit Campus - ' + campus.name
         ),
         _react2.default.createElement(
-          'form',
-          null,
-          _react2.default.createElement('input', { name: 'name', onChange: onChangeForm, value: name })
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'label',
+            null,
+            'Name'
+          ),
+          _react2.default.createElement('input', { name: 'name', onChange: onChangeForm, value: name, type: 'text', className: 'form-control' })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'label',
+            null,
+            'Image URL'
+          ),
+          _react2.default.createElement('input', { name: 'imageURL', onChange: onChangeForm, value: imageURL, type: 'url', className: 'form-control' })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'label',
+            null,
+            'Description'
+          ),
+          _react2.default.createElement('textarea', { name: 'description', className: 'form-control', rows: '5', onChange: onChangeForm, value: description })
         ),
         _react2.default.createElement(
           'button',
-          { onClick: !campus ? onCreateCampus : onUpdateCampus },
+          { onClick: !campus ? onCreateCampus : onUpdateCampus, disabled: !name.length, type: 'button', className: 'btn btn-primary' },
           !campus ? 'Add' : 'Edit',
           ' Campus'
+        ),
+        inputEdited.name && !name.length && _react2.default.createElement(
+          'div',
+          { className: 'alert alert-danger' },
+          'Campus name must be entered.'
         )
       );
     }
@@ -29320,7 +29649,7 @@ var mapStateToProps = function mapStateToProps(_ref2, _ref3) {
   var campuses = _ref2.campuses;
   var id = _ref3.id;
 
-  return { campus: campuses && campuses.find(function (campus) {
+  return { campus: campuses.find(function (campus) {
       return campus.id === id;
     }) };
 };

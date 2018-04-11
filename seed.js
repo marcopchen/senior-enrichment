@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 
 const { conn, Campus, Student } = require('./db/models');
 
-const numStudents = 18;
+const numStudents = 12;
 
 const emails = chance.unique(chance.email, numStudents);
 
@@ -25,28 +25,13 @@ function randImageURL(gender) {
   return toonAvatar.generate_avatar({ gender, id });
 }
 
-function randWords() {
-  const numWords = chance.natural({
-    min: 1,
-    max: 8
-  });
-  return chance.sentence({ words: numWords })
-    .replace(/\b\w/g, function (firstLetter) {
-      return firstLetter.toUpperCase();
-    })
-    .slice(0, -1);
-}
-
 function randGPA() {
-  const grade = chance.natural({
-    min: 1,
-    max: 3
-  });
-  const point = chance.natural({
+  const gpa = chance.floating({
     min: 0,
-    max: 9
+    max: 4,
+    fixed: 1
   });
-  return grade + '.' + point;
+  return gpa;
 }
 
 function randStudent(createdCampuses) {
@@ -59,9 +44,6 @@ function randStudent(createdCampuses) {
     imageURL: randImageURL(gender),
     gpa: randGPA(),
     campus_id: campus.id
-    // phone: chance.phone(),
-    // password: chance.word(),
-    // isAdmin: chance.weighted([true, false], [5, 95])
   });
 }
 
@@ -96,12 +78,12 @@ function createCampuses() {
 
 function createStudents(createdCampuses) {
   return Promise.map(generateStudents(createdCampuses), student => student.save());
-    // .then(createdStudents => {
-    //   return Promise.map(createdStudents, student => {
-    //     const campus = chance.pick(createdCampuses);
-    //     return student.setCampus(campus);
-    //   });
-    // });
+  // .then(createdStudents => {
+  //   return Promise.map(createdStudents, student => {
+  //     const campus = chance.pick(createdCampuses);
+  //     return student.setCampus(campus);
+  //   });
+  // });
 }
 
 function seed() {

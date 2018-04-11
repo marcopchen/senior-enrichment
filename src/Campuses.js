@@ -6,9 +6,13 @@ const Campuses = () => {
   return (
     <div>
       <h2>Campuses</h2>
-      <Link to={`/campuses/add`}>
-        <button>Add Campus</button>
-      </Link>
+      <div className='container'>
+        <button type='button' className='btn btn-default'>
+          <Link to='/campuses/add'>
+            Add Campus
+          </Link>
+        </button>
+      </div>
       <CampusList />
     </div>
   );
