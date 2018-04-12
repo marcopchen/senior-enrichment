@@ -10,8 +10,17 @@ class StudentCreate extends Component {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
       email: !student ? '' : student.email,
-      gpa: !student ? '' : student.gpa,
+      gpa: !student ? 4.0 : student.gpa,
+      inputError: {},
       inputEdited: {}
+    };
+    this.validators = {
+      email: value => {
+        const validEmail = /\S+@\S+\.\S+/;
+        if (!validEmail.test(value)) {
+          return `Student's e-mail must be a valid address.`;
+        }
+      }
     };
     this.onChangeForm = this.onChangeForm.bind(this);
     this.onCreateStudent = this.onCreateStudent.bind(this);
@@ -24,22 +33,32 @@ class StudentCreate extends Component {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
       email: !student ? '' : student.email,
-      gpa: !student ? '' : student.gpa,
+      gpa: !student ? 4.0 : student.gpa,
     });
   }
 
   onChangeForm(ev) {
+    ev.preventDefault();
     const inputName = ev.target.name;
     const inputValue = ev.target.value;
     const { inputEdited } = this.state;
-    ev.preventDefault();
     inputEdited[inputName] = true;
     this.setState({ [inputName]: inputValue, inputEdited });
   }
 
   onCreateStudent(ev) {
-    const { firstName, lastName, email, gpa } = this.state;
     ev.preventDefault();
+    const { firstName, lastName, email, gpa } = this.state;
+    const inputError = Object.keys(this.validators).reduce((errors, field) => {
+      const validator = this.validators[field];
+      const value = this.state[field];
+      const error = validator(value);
+      if (error) {
+        errors[field] = error;
+      }
+      return errors;
+    }, {});
+    this.setState({ inputError, inputEdited: {} });
     this.props.createStudent({
       firstName,
       lastName,
@@ -49,9 +68,19 @@ class StudentCreate extends Component {
   }
 
   onUpdateStudent(ev) {
+    ev.preventDefault();
     const { firstName, lastName, email, gpa } = this.state;
     const { student } = this.props;
-    ev.preventDefault();
+    const inputError = Object.keys(this.validators).reduce((errors, field) => {
+      const validator = this.validators[field];
+      const value = this.state[field];
+      const error = validator(value);
+      if (error) {
+        errors[field] = error;
+      }
+      return errors;
+    }, {});
+    this.setState({ inputError, inputEdited: {} });
     this.props.updateStudent({
       firstName,
       lastName,
@@ -62,9 +91,10 @@ class StudentCreate extends Component {
 
   render() {
     const { onCreateStudent, onUpdateStudent, onChangeForm } = this;
-    const { inputEdited } = this.state;
+    const { gpa, inputEdited, inputError } = this.state;
     const { student } = this.props;
     const fields = { firstName: 'First Name', lastName: 'Last Name', email: 'E-mail' };
+    const inputEmpty = Object.keys(fields).some(field => !this.state[field].length);
     return (
       <div>
         <h2>{!student ? ('Add Student') : (`Edit Student - ${student.name}`)}</h2>
@@ -78,9 +108,9 @@ class StudentCreate extends Component {
         }
         <div className='form-group'>
           <label>GPA</label>
-          <input name='gpa' onChange={onChangeForm} value={this.state.gpa} className='form-control' maxLength='3' step='0.1' min='0.0' max='4.0' />
+          <input name='gpa' onChange={onChangeForm} value={(this.state.gpa * 1).toFixed(1)} className='form-control' type='number' step='0.1' min='0.0' max='4.0' />
         </div>
-        <button onClick={!student ? onCreateStudent : onUpdateStudent} type='button' className='btn btn-primary' disabled={Object.keys(fields).some(field => !this.state[field].length)}>
+        <button onClick={!student ? onCreateStudent : onUpdateStudent} type='button' className='btn btn-primary' disabled={inputEmpty}>
           {!student ? ('Add') : ('Edit')} Student
         </button>
         {
@@ -88,9 +118,16 @@ class StudentCreate extends Component {
             return inputEdited[field] && !this.state[field].length &&
               (<div key={field} className='alert alert-danger'>
                 {`Student's ${fields[field].toLowerCase()} must be entered.`}
-               </div>);
+              </div>);
           })
         }
+        {!inputEdited.email && inputError.email && (<div className='alert alert-danger'>
+          {inputError.email}
+        </div>)}
+        {inputEdited.gpa && (gpa < 0 || gpa > 4) &&
+          (<div className='alert alert-danger'>
+            {`Student's GPA must be between 0.0 and 4.0.`}
+          </div>)}
       </div>
     );
   }

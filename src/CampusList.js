@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const CampusList = ({ campuses }) => {
   return (
     <div className='container'>
+      {!campuses.length && <div className='alert'>No campuses registered.</div>}
       <ul className='list-group'>
         {
           campuses.map(campus => {
@@ -18,7 +19,6 @@ const CampusList = ({ campuses }) => {
           })
         }
       </ul>
-      {!campuses.length && <div className='alert'>No campuses registered.</div>}
     </div>
   );
 };

@@ -25,10 +25,7 @@ class Student extends Component {
     const { campus_id } = this.state;
     const { student, campus } = this.props;
     ev.preventDefault();
-    this.props.updateStudent({ campus_id }, student.id, campus);
-    // this.setState({
-    //   campus: campuses && campuses.find(_campus => _campus.id === campus_id)
-    // });
+    this.props.updateStudent({ campus_id: campus_id * 1 }, student.id, campus);
   }
 
   onDeleteStudent(ev) {
@@ -43,7 +40,10 @@ class Student extends Component {
     return (
       <div>
         <h2>Student - {student && student.name}</h2>
-        <p>Campus: <Link to={`/campuses/${campus && campus.id}`}>{campus && campus.name}</Link></p>
+        {
+          !campus ? <div className='alert'>Not registered to a campus.</div> :
+            <p>Campus: <Link to={`/campuses/${campus && campus.id}`}>{campus && campus.name}</Link></p>
+        }
         <p>E-mail: {student && student.email}</p>
         <p>GPA: {student && student.gpa}</p>
         <form>

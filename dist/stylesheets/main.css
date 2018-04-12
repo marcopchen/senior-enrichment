@@ -121,54 +121,6 @@ body {
     .signin-container > * {
       width: 100%; } }
 
-[contenteditable] {
-  line-height: 1.4em;
-  white-space: pre-wrap;
-}
-
-[contenteditable]:empty::before {
-  content: attr(placeholder);
-  color: #aaa;
-  cursor: text; }
-
-[contenteditable]:empty:hover::before {
-  color: #bbb; }
-
-.form-like[contenteditable] {
-  border-bottom: 1px dashed #000; }
-  .form-like[contenteditable]:focus {
-    border-color: transparent; }
-  .form-like[contenteditable][contenteditable="false"] {
-    border-color: transparent; }
-
-input {
-  border-style: solid;
-  line-height: 1.4em;
-}
-
-input:placeholder-shown::before {
-  color: #bbb;
-  cursor: text;
-}
-
-input:placeholder-shown:hover::before {
-  color: #fff;
-}
-
-input.form-like {
-  border: none;
-  border-bottom: 1px dashed #000;
-  background-color: transparent;
-}
-
-input.form-like:focus {
-    border-color: transparent;
-}
-
-input.form-like[disabled] {
-    border-color: transparent;
-}
-
 .home {
   font-size: 22px; }
 
@@ -183,48 +135,6 @@ input.form-like[disabled] {
 @media (max-width: 511px) {
   .home {
     font-size: 6px; } }
-
-.banner {
-  margin: 2em 0 0;
-  font-size: 2em; }
-  .banner h1 {
-    font-size: 2em; }
-
-.about > * {
-  padding-top: 6em;
-  padding-bottom: 6em; }
-  .about > *:first-child {
-    padding-top: 3em; }
-  .about > *:last-child {
-    padding-bottom: 3em; }
-
-.about .icon-flexbox {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 6em; }
-  .about .icon-flexbox .glyphicon {
-    padding: 0.25em;
-    border-radius: 0.25em;
-    background-color: #444;
-    margin: 0.25em 0; }
-
-.about img {
-  border-radius: 10px;
-  border: 2px dotted transparent;
-  height: 10em;
-  opacity: 0.7; }
-  .about img:hover {
-    border-color: #f0ad4e;
-    opacity: 0.8; }
-
-.about pre {
-  font-size: 115%;
-  color: inherit;
-  background-color: transparent;
-  border: none;
-  word-wrap: normal; }
 
 .student-item * {
   white-space: nowrap; }
@@ -256,7 +166,7 @@ input.form-like[disabled] {
   .student-list > * {
     flex: 1; }
 
-.student-list .list-group-item, .student-query .list-group-item {
+.student-list .list-group-item.list-group-item {
   border-radius: 4px;
   margin: 0; }
 

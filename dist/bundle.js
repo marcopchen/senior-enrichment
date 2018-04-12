@@ -4226,6 +4226,11 @@ var StudentList = function StudentList(_ref) {
   return _react2.default.createElement(
     'div',
     { className: 'container' },
+    !students.length && _react2.default.createElement(
+      'div',
+      { className: 'alert' },
+      'No students registered.'
+    ),
     _react2.default.createElement(
       'div',
       { className: 'user-list' },
@@ -4261,11 +4266,6 @@ var StudentList = function StudentList(_ref) {
           )
         );
       })
-    ),
-    !students.length && _react2.default.createElement(
-      'p',
-      null,
-      'No students registered.'
     )
   );
 };
@@ -28805,10 +28805,7 @@ var Student = function (_Component) {
           campus = _props.campus;
 
       ev.preventDefault();
-      this.props.updateStudent({ campus_id: campus_id }, student.id, campus);
-      // this.setState({
-      //   campus: campuses && campuses.find(_campus => _campus.id === campus_id)
-      // });
+      this.props.updateStudent({ campus_id: campus_id * 1 }, student.id, campus);
     }
   }, {
     key: 'onDeleteStudent',
@@ -28837,7 +28834,11 @@ var Student = function (_Component) {
           'Student - ',
           student && student.name
         ),
-        _react2.default.createElement(
+        !campus ? _react2.default.createElement(
+          'div',
+          { className: 'alert' },
+          'Not registered to a campus.'
+        ) : _react2.default.createElement(
           'p',
           null,
           'Campus: ',
@@ -29031,8 +29032,17 @@ var StudentCreate = function (_Component) {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
       email: !student ? '' : student.email,
-      gpa: !student ? '' : student.gpa,
+      gpa: !student ? 4.0 : student.gpa,
+      inputError: {},
       inputEdited: {}
+    };
+    _this.validators = {
+      email: function email(value) {
+        var validEmail = /\S+@\S+\.\S+/;
+        if (!validEmail.test(value)) {
+          return 'Student\'s e-mail must be a valid address.';
+        }
+      }
     };
     _this.onChangeForm = _this.onChangeForm.bind(_this);
     _this.onCreateStudent = _this.onCreateStudent.bind(_this);
@@ -29049,7 +29059,7 @@ var StudentCreate = function (_Component) {
         firstName: !student ? '' : student.firstName,
         lastName: !student ? '' : student.lastName,
         email: !student ? '' : student.email,
-        gpa: !student ? '' : student.gpa
+        gpa: !student ? 4.0 : student.gpa
       });
     }
   }, {
@@ -29057,24 +29067,36 @@ var StudentCreate = function (_Component) {
     value: function onChangeForm(ev) {
       var _setState;
 
+      ev.preventDefault();
       var inputName = ev.target.name;
       var inputValue = ev.target.value;
       var inputEdited = this.state.inputEdited;
 
-      ev.preventDefault();
       inputEdited[inputName] = true;
       this.setState((_setState = {}, _defineProperty(_setState, inputName, inputValue), _defineProperty(_setState, 'inputEdited', inputEdited), _setState));
     }
   }, {
     key: 'onCreateStudent',
     value: function onCreateStudent(ev) {
+      var _this2 = this;
+
+      ev.preventDefault();
       var _state = this.state,
           firstName = _state.firstName,
           lastName = _state.lastName,
           email = _state.email,
           gpa = _state.gpa;
 
-      ev.preventDefault();
+      var inputError = Object.keys(this.validators).reduce(function (errors, field) {
+        var validator = _this2.validators[field];
+        var value = _this2.state[field];
+        var error = validator(value);
+        if (error) {
+          errors[field] = error;
+        }
+        return errors;
+      }, {});
+      this.setState({ inputError: inputError, inputEdited: {} });
       this.props.createStudent({
         firstName: firstName,
         lastName: lastName,
@@ -29085,6 +29107,9 @@ var StudentCreate = function (_Component) {
   }, {
     key: 'onUpdateStudent',
     value: function onUpdateStudent(ev) {
+      var _this3 = this;
+
+      ev.preventDefault();
       var _state2 = this.state,
           firstName = _state2.firstName,
           lastName = _state2.lastName,
@@ -29092,7 +29117,16 @@ var StudentCreate = function (_Component) {
           gpa = _state2.gpa;
       var student = this.props.student;
 
-      ev.preventDefault();
+      var inputError = Object.keys(this.validators).reduce(function (errors, field) {
+        var validator = _this3.validators[field];
+        var value = _this3.state[field];
+        var error = validator(value);
+        if (error) {
+          errors[field] = error;
+        }
+        return errors;
+      }, {});
+      this.setState({ inputError: inputError, inputEdited: {} });
       this.props.updateStudent({
         firstName: firstName,
         lastName: lastName,
@@ -29103,15 +29137,21 @@ var StudentCreate = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this4 = this;
 
       var onCreateStudent = this.onCreateStudent,
           onUpdateStudent = this.onUpdateStudent,
           onChangeForm = this.onChangeForm;
-      var inputEdited = this.state.inputEdited;
+      var _state3 = this.state,
+          gpa = _state3.gpa,
+          inputEdited = _state3.inputEdited,
+          inputError = _state3.inputError;
       var student = this.props.student;
 
       var fields = { firstName: 'First Name', lastName: 'Last Name', email: 'E-mail' };
+      var inputEmpty = Object.keys(fields).some(function (field) {
+        return !_this4.state[field].length;
+      });
       return _react2.default.createElement(
         'div',
         null,
@@ -29129,7 +29169,7 @@ var StudentCreate = function (_Component) {
               null,
               fields[field]
             ),
-            _react2.default.createElement('input', { name: '' + field, onChange: onChangeForm, value: _this2.state[field], className: 'form-control' })
+            _react2.default.createElement('input', { name: '' + field, onChange: onChangeForm, value: _this4.state[field], className: 'form-control' })
           );
         }),
         _react2.default.createElement(
@@ -29140,23 +29180,31 @@ var StudentCreate = function (_Component) {
             null,
             'GPA'
           ),
-          _react2.default.createElement('input', { name: 'gpa', onChange: onChangeForm, value: this.state.gpa, className: 'form-control', maxLength: '3', step: '0.1', min: '0.0', max: '4.0' })
+          _react2.default.createElement('input', { name: 'gpa', onChange: onChangeForm, value: (this.state.gpa * 1).toFixed(1), className: 'form-control', type: 'number', step: '0.1', min: '0.0', max: '4.0' })
         ),
         _react2.default.createElement(
           'button',
-          { onClick: !student ? onCreateStudent : onUpdateStudent, type: 'button', className: 'btn btn-primary', disabled: Object.keys(fields).some(function (field) {
-              return !_this2.state[field].length;
-            }) },
+          { onClick: !student ? onCreateStudent : onUpdateStudent, type: 'button', className: 'btn btn-primary', disabled: inputEmpty },
           !student ? 'Add' : 'Edit',
           ' Student'
         ),
         Object.keys(fields).map(function (field) {
-          return inputEdited[field] && !_this2.state[field].length && _react2.default.createElement(
+          return inputEdited[field] && !_this4.state[field].length && _react2.default.createElement(
             'div',
             { key: field, className: 'alert alert-danger' },
             'Student\'s ' + fields[field].toLowerCase() + ' must be entered.'
           );
-        })
+        }),
+        !inputEdited.email && inputError.email && _react2.default.createElement(
+          'div',
+          { className: 'alert alert-danger' },
+          inputError.email
+        ),
+        inputEdited.gpa && (gpa < 0 || gpa > 4) && _react2.default.createElement(
+          'div',
+          { className: 'alert alert-danger' },
+          'Student\'s GPA must be between 0.0 and 4.0.'
+        )
       );
     }
   }]);
@@ -29259,22 +29307,19 @@ var Campus = function (_Component) {
   }, {
     key: 'onUpdateStudent',
     value: function onUpdateStudent(ev) {
-      var _props = this.props,
-          campus_id = _props.campus_id,
-          campus = _props.campus;
+      var campus = this.props.campus;
       var student_id = this.state.student_id;
 
       ev.preventDefault();
-      this.props.updateStudent({ campus_id: campus_id }, student_id, campus);
+      this.props.updateStudent({ campus_id: campus.id }, student_id, campus);
     }
   }, {
     key: 'render',
     value: function render() {
       var student_id = this.state.student_id;
-      var _props2 = this.props,
-          campus = _props2.campus,
-          students = _props2.students,
-          campus_id = _props2.campus_id;
+      var _props = this.props,
+          campus = _props.campus,
+          students = _props.students;
       var onDeleteCampus = this.onDeleteCampus,
           onUpdateStudent = this.onUpdateStudent,
           onChangeForm = this.onChangeForm;
@@ -29306,11 +29351,11 @@ var Campus = function (_Component) {
             if (a.firstName < b.firstName) return -1;
             if (a.firstName > b.firstName) return 1;
             return 0;
-          }).map(function (student) {
+          }).map(function (_student) {
             return _react2.default.createElement(
               'option',
-              { key: student.id, value: student.id, disabled: student.campus_id === campus_id },
-              student.name
+              { key: _student.id, value: _student.id, disabled: campus && _student.campus_id === campus.id },
+              _student.name
             );
           })
         ),
@@ -29319,7 +29364,7 @@ var Campus = function (_Component) {
           { onClick: onUpdateStudent, disabled: !student_id, type: 'button' },
           'Add Student'
         ),
-        _react2.default.createElement(_StudentList2.default, { campus_id: campus_id }),
+        _react2.default.createElement(_StudentList2.default, { campus_id: campus && campus.id }),
         _react2.default.createElement(
           'button',
           { type: 'button', className: 'btn btn-default' },
@@ -29346,10 +29391,10 @@ var mapStateToProps = function mapStateToProps(_ref, _ref2) {
       students = _ref.students;
   var id = _ref2.id;
 
-  var campus = campuses.find(function (campus) {
-    return campus.id === id;
+  var campus = campuses.find(function (_campus) {
+    return _campus.id === id;
   });
-  return { campus: campus, students: students, campus_id: id };
+  return { campus: campus, students: students };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
@@ -29445,6 +29490,11 @@ var CampusList = function CampusList(_ref) {
   return _react2.default.createElement(
     'div',
     { className: 'container' },
+    !campuses.length && _react2.default.createElement(
+      'div',
+      { className: 'alert' },
+      'No campuses registered.'
+    ),
     _react2.default.createElement(
       'ul',
       { className: 'list-group' },
@@ -29459,11 +29509,6 @@ var CampusList = function CampusList(_ref) {
           )
         );
       })
-    ),
-    !campuses.length && _react2.default.createElement(
-      'div',
-      { className: 'alert' },
-      'No campuses registered.'
     )
   );
 };

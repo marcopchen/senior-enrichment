@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const StudentList = ({ students }) => {
   return (
     <div className='container'>
+      {!students.length && <div className='alert'>No students registered.</div>}
       <div className='user-list'>
         {
           students && students.sort(function (a, b) {
@@ -29,7 +30,6 @@ const StudentList = ({ students }) => {
           })
         }
       </div>
-      {!students.length && <p>No students registered.</p>}
     </div>
   );
 };

@@ -19,7 +19,6 @@ const Student = conn.define('student', {
   },
   email: {
     type: Sequelize.STRING,
-    defaultValue: 'email@site.com',
     unique: true,
     validate: {
       notEmpty: true,
@@ -32,7 +31,11 @@ const Student = conn.define('student', {
   },
   gpa: {
     type: Sequelize.FLOAT,
-    defaultValue: 4.0
+    defaultValue: 4.0,
+    validate: {
+      min: 0.0,
+      max: 4.0
+    }
   }
 }, {
     scopes: {

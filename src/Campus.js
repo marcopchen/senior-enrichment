@@ -28,15 +28,15 @@ class Campus extends Component {
   }
 
   onUpdateStudent(ev) {
-    const { campus_id, campus } = this.props;
+    const { campus } = this.props;
     const { student_id } = this.state;
     ev.preventDefault();
-    this.props.updateStudent({ campus_id }, student_id, campus);
+    this.props.updateStudent({ campus_id: campus.id }, student_id, campus);
   }
 
   render() {
     const { student_id } = this.state;
-    const { campus, students, campus_id } = this.props;
+    const { campus, students } = this.props;
     const { onDeleteCampus, onUpdateStudent, onChangeForm } = this;
     return (
       <div>
@@ -49,9 +49,9 @@ class Campus extends Component {
               if (a.firstName < b.firstName) return -1;
               if (a.firstName > b.firstName) return 1;
               return 0;
-            }).map(student => (
-              <option key={student.id} value={student.id} disabled={student.campus_id === campus_id}>
-                {student.name}
+            }).map(_student => (
+              <option key={_student.id} value={_student.id} disabled={campus && _student.campus_id === campus.id}>
+                {_student.name}
               </option>
             ))
           }
@@ -59,7 +59,7 @@ class Campus extends Component {
         <button onClick={onUpdateStudent} disabled={!student_id} type='button'>
           Add Student
         </button>
-        <StudentList campus_id={campus_id} />
+        <StudentList campus_id={campus && campus.id} />
         <button type='button' className='btn btn-default'>
           <Link to={`/campuses/${campus && campus.id}/edit`}>
             Edit Campus
@@ -72,8 +72,8 @@ class Campus extends Component {
 }
 
 const mapStateToProps = ({ campuses, students }, { id }) => {
-  const campus = campuses.find(campus => campus.id === id);
-  return { campus, students, campus_id: id };
+  const campus = campuses.find(_campus => _campus.id === id);
+  return { campus, students };
 };
 
 const mapDispatchToProps = (dispatch, { history }) => {

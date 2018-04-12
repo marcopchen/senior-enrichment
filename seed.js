@@ -49,21 +49,17 @@ function randStudent(createdCampuses) {
 
 function generateCampuses() {
   const campuses = [];
-  const numPars = chance.natural({
-    min: 1,
-    max: 3
-  });
   campuses.push(Campus.build({
     name: 'Stern School of Business',
-    description: chance.n(chance.paragraph, numPars).join('\n\n')
+    description: chance.n(chance.paragraph, 1).join('\n')
   }));
   campuses.push(Campus.build({
     name: 'Tisch School of the Arts',
-    description: chance.n(chance.paragraph, numPars).join('\n\n')
+    description: chance.n(chance.paragraph, 1).join('\n')
   }));
   campuses.push(Campus.build({
     name: 'Tandon School of Engineering',
-    description: chance.n(chance.paragraph, numPars).join('\n\n')
+    description: chance.n(chance.paragraph, 1).join('\n')
   }));
   return campuses;
 }
