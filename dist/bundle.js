@@ -868,7 +868,7 @@ module.exports = emptyFunction;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.deleteStudent = exports.updateStudent = exports.createStudent = exports.getStudents = exports.deleteCampus = exports.updateCampus = exports.createCampus = exports.getCampuses = undefined;
+exports.deleteStudent = exports.updateStudent = exports.createStudent = exports.readStudents = exports.deleteCampus = exports.updateCampus = exports.createCampus = exports.readCampuses = undefined;
 
 var _redux = __webpack_require__(36);
 
@@ -888,12 +888,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var SET_CAMPUSES = 'SET_CAMPUSES';
+var READ_CAMPUSES = 'READ_CAMPUSES';
 var CREATE_CAMPUS = 'CREATE_CAMPUS';
 var UPDATE_CAMPUS = 'UPDATE_CAMPUS';
 var DELETE_CAMPUS = 'DELETE_CAMPUS';
 
-var SET_STUDENTS = 'SET_STUDENTS';
+var READ_STUDENTS = 'READ_STUDENTS';
 var CREATE_STUDENT = 'CREATE_STUDENT';
 var UPDATE_STUDENT = 'UPDATE_STUDENT';
 var DELETE_STUDENT = 'DELETE_STUDENT';
@@ -903,7 +903,7 @@ var campusesReducer = function campusesReducer() {
   var action = arguments[1];
 
   switch (action.type) {
-    case SET_CAMPUSES:
+    case READ_CAMPUSES:
       state = action.campuses;
       break;
     case CREATE_CAMPUS:
@@ -919,7 +919,6 @@ var campusesReducer = function campusesReducer() {
         return campus.id === action.campus.id ? action.campus : campus;
       });
       break;
-    default:
   }
   return state;
 };
@@ -929,7 +928,7 @@ var studentsReducer = function studentsReducer() {
   var action = arguments[1];
 
   switch (action.type) {
-    case SET_STUDENTS:
+    case READ_STUDENTS:
       state = action.students;
       break;
     case CREATE_STUDENT:
@@ -950,7 +949,6 @@ var studentsReducer = function studentsReducer() {
         return student.id === action.student.id ? action.student : student;
       });
       break;
-    default:
   }
   return state;
 };
@@ -960,26 +958,26 @@ var reducer = (0, _redux.combineReducers)({
   students: studentsReducer
 });
 
-var getCampuses = function getCampuses() {
+var readCampuses = function readCampuses() {
   return function (dispatch) {
     return _axios2.default.get('/api/campuses').then(function (result) {
       return result.data;
     }).then(function (campuses) {
       return dispatch({
-        type: SET_CAMPUSES,
+        type: READ_CAMPUSES,
         campuses: campuses
       });
     });
   };
 };
 
-var getStudents = function getStudents() {
+var readStudents = function readStudents() {
   return function (dispatch) {
     return _axios2.default.get('/api/students').then(function (result) {
       return result.data;
     }).then(function (students) {
       return dispatch({
-        type: SET_STUDENTS,
+        type: READ_STUDENTS,
         students: students
       });
     });
@@ -1016,7 +1014,7 @@ var createStudent = function createStudent(student, history) {
   };
 };
 
-var updateCampus = function updateCampus(campus, id, history) {
+var updateCampus = function updateCampus(campus, id) {
   return function (dispatch) {
     return _axios2.default.put('/api/campuses/' + id, campus).then(function (result) {
       return result.data;
@@ -1025,13 +1023,11 @@ var updateCampus = function updateCampus(campus, id, history) {
         type: UPDATE_CAMPUS,
         campus: campus
       });
-    }).then(function (action) {
-      history.push('/campuses/' + action.campus.id);
     });
   };
 };
 
-var updateStudent = function updateStudent(student, id, campus, history) {
+var updateStudent = function updateStudent(student, id) {
   return function (dispatch) {
     return _axios2.default.put('/api/students/' + id, student).then(function (result) {
       return result.data;
@@ -1040,10 +1036,6 @@ var updateStudent = function updateStudent(student, id, campus, history) {
         type: UPDATE_STUDENT,
         student: student
       });
-    }).then(function (action) {
-      if (!campus) {
-        history.push('/students/' + action.student.id);
-      }
     });
   };
 };
@@ -1081,11 +1073,11 @@ var deleteStudent = function deleteStudent(student, history) {
 var store = (0, _redux.createStore)(reducer, (0, _redux.applyMiddleware)(_reduxThunk2.default, _reduxLogger2.default));
 
 exports.default = store;
-exports.getCampuses = getCampuses;
+exports.readCampuses = readCampuses;
 exports.createCampus = createCampus;
 exports.updateCampus = updateCampus;
 exports.deleteCampus = deleteCampus;
-exports.getStudents = getStudents;
+exports.readStudents = readStudents;
 exports.createStudent = createStudent;
 exports.updateStudent = updateStudent;
 exports.deleteStudent = deleteStudent;
@@ -4210,6 +4202,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -4218,70 +4212,121 @@ var _reactRedux = __webpack_require__(6);
 
 var _reactRouterDom = __webpack_require__(7);
 
+var _store = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var StudentList = function StudentList(_ref) {
-  var students = _ref.students;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  return _react2.default.createElement(
-    'div',
-    { className: 'container' },
-    !students.length && _react2.default.createElement(
-      'div',
-      { className: 'alert' },
-      'No students registered.'
-    ),
-    _react2.default.createElement(
-      'div',
-      { className: 'user-list' },
-      students && students.sort(function (a, b) {
-        if (a.firstName < b.firstName) return -1;
-        if (a.firstName > b.firstName) return 1;
-        return 0;
-      }).map(function (student) {
-        return _react2.default.createElement(
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var StudentList = function (_Component) {
+  _inherits(StudentList, _Component);
+
+  function StudentList() {
+    _classCallCheck(this, StudentList);
+
+    var _this = _possibleConstructorReturn(this, (StudentList.__proto__ || Object.getPrototypeOf(StudentList)).call(this));
+
+    _this.onUpdateStudent = _this.onUpdateStudent.bind(_this);
+    return _this;
+  }
+
+  _createClass(StudentList, [{
+    key: 'onUpdateStudent',
+    value: function onUpdateStudent(ev, student_id) {
+      ev.preventDefault();
+      this.props.updateStudent({ campus_id: null }, student_id);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          students = _props.students,
+          campus = _props.campus;
+      var onUpdateStudent = this.onUpdateStudent;
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'container' },
+        !students.length && _react2.default.createElement(
           'div',
-          { className: 'list-group-item min-content user-item', key: student.id },
-          _react2.default.createElement(
-            'div',
-            { className: 'media' },
-            _react2.default.createElement(
+          { className: 'alert' },
+          'No students registered.'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'user-list' },
+          students && students.sort(function (a, b) {
+            if (a.firstName < b.firstName) return -1;
+            if (a.firstName > b.firstName) return 1;
+            return 0;
+          }).map(function (student) {
+            return _react2.default.createElement(
               'div',
-              { className: 'media-left media-middle icon-container' },
-              _react2.default.createElement('img', { className: 'media-object img-circle', src: student.imageURL })
-            ),
-            _react2.default.createElement(
-              _reactRouterDom.Link,
-              { to: '/students/' + student.id, className: 'media-body' },
+              { className: 'list-group-item min-content user-item', key: student.id },
               _react2.default.createElement(
-                'h5',
-                { className: 'media-heading tucked' },
+                'div',
+                { className: 'media' },
                 _react2.default.createElement(
-                  'span',
-                  null,
-                  student.name
+                  'div',
+                  { className: 'media-left media-middle icon-container' },
+                  _react2.default.createElement('img', { className: 'media-object img-circle', src: student.imageURL })
+                ),
+                _react2.default.createElement(
+                  _reactRouterDom.Link,
+                  { to: '/students/' + student.id, className: 'media-body' },
+                  _react2.default.createElement(
+                    'h5',
+                    { className: 'media-heading tucked' },
+                    _react2.default.createElement(
+                      'span',
+                      null,
+                      student.name
+                    )
+                  )
                 )
+              ),
+              campus && _react2.default.createElement(
+                'button',
+                { onClick: function onClick(ev) {
+                    return onUpdateStudent(ev, student.id);
+                  }, type: 'button' },
+                'Remove Student'
               )
-            )
-          )
-        );
-      })
-    )
-  );
-};
+            );
+          })
+        )
+      );
+    }
+  }]);
 
-var mapStateToProps = function mapStateToProps(_ref2, _ref3) {
-  var students = _ref2.students;
-  var campus_id = _ref3.campus_id;
+  return StudentList;
+}(_react.Component);
+
+var mapStateToProps = function mapStateToProps(_ref, _ref2) {
+  var students = _ref.students;
+  var campus = _ref2.campus;
 
   return {
-    students: !campus_id ? students : students.filter(function (student) {
-      return student.campus_id === campus_id;
-    })
+    students: !campus ? students : students.filter(function (student) {
+      return student.campus_id === campus.id;
+    }),
+    campus: campus
   };
 };
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(StudentList);
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    updateStudent: function updateStudent(student, id) {
+      return dispatch((0, _store.updateStudent)(student, id));
+    }
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(StudentList);
 
 /***/ }),
 /* 56 */
@@ -25561,8 +25606,8 @@ var App = function (_Component) {
   _createClass(App, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.props.getCampuses();
-      this.props.getStudents();
+      this.props.readCampuses();
+      this.props.readStudents();
     }
   }, {
     key: 'render',
@@ -25623,11 +25668,11 @@ var App = function (_Component) {
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
-    getCampuses: function getCampuses() {
-      return dispatch((0, _store.getCampuses)());
+    readCampuses: function readCampuses() {
+      return dispatch((0, _store.readCampuses)());
     },
-    getStudents: function getStudents() {
-      return dispatch((0, _store.getStudents)());
+    readStudents: function readStudents() {
+      return dispatch((0, _store.readStudents)());
     }
   };
 };
@@ -28800,12 +28845,10 @@ var Student = function (_Component) {
     key: 'onUpdateStudent',
     value: function onUpdateStudent(ev) {
       var campus_id = this.state.campus_id;
-      var _props = this.props,
-          student = _props.student,
-          campus = _props.campus;
+      var student = this.props.student;
 
       ev.preventDefault();
-      this.props.updateStudent({ campus_id: campus_id * 1 }, student.id, campus);
+      this.props.updateStudent({ campus_id: campus_id * 1 }, student.id);
     }
   }, {
     key: 'onDeleteStudent',
@@ -28817,10 +28860,10 @@ var Student = function (_Component) {
     key: 'render',
     value: function render() {
       var campus_id = this.state.campus_id;
-      var _props2 = this.props,
-          student = _props2.student,
-          campuses = _props2.campuses,
-          campus = _props2.campus;
+      var _props = this.props,
+          student = _props.student,
+          campuses = _props.campuses,
+          campus = _props.campus;
       var onChangeForm = this.onChangeForm,
           onUpdateStudent = this.onUpdateStudent,
           onDeleteStudent = this.onDeleteStudent;
@@ -28882,7 +28925,7 @@ var Student = function (_Component) {
           _react2.default.createElement(
             'button',
             { onClick: onUpdateStudent, disabled: !campus_id, type: 'button' },
-            !student ? 'Add to' : 'Switch',
+            !campus ? 'Add to' : 'Switch',
             ' Campus'
           )
         ),
@@ -28928,8 +28971,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
     deleteStudent: function deleteStudent(student) {
       return dispatch((0, _store.deleteStudent)(student, history));
     },
-    updateStudent: function updateStudent(student, id, campus) {
-      return dispatch((0, _store.updateStudent)(student, id, campus, history));
+    updateStudent: function updateStudent(student, id) {
+      return dispatch((0, _store.updateStudent)(student, id));
     }
   };
 };
@@ -29032,7 +29075,7 @@ var StudentCreate = function (_Component) {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
       email: !student ? '' : student.email,
-      gpa: !student ? 4.0 : student.gpa,
+      gpa: !student ? 4.0 : student.gpa * 1,
       inputError: {},
       inputEdited: {}
     };
@@ -29115,7 +29158,9 @@ var StudentCreate = function (_Component) {
           lastName = _state2.lastName,
           email = _state2.email,
           gpa = _state2.gpa;
-      var student = this.props.student;
+      var _props = this.props,
+          student = _props.student,
+          history = _props.history;
 
       var inputError = Object.keys(this.validators).reduce(function (errors, field) {
         var validator = _this3.validators[field];
@@ -29132,7 +29177,9 @@ var StudentCreate = function (_Component) {
         lastName: lastName,
         email: email,
         gpa: gpa
-      }, student.id, null);
+      }, student.id).then(function () {
+        history.push('/students/' + student.id);
+      });
     }
   }, {
     key: 'render',
@@ -29180,7 +29227,7 @@ var StudentCreate = function (_Component) {
             null,
             'GPA'
           ),
-          _react2.default.createElement('input', { name: 'gpa', onChange: onChangeForm, value: (this.state.gpa * 1).toFixed(1), className: 'form-control', type: 'number', step: '0.1', min: '0.0', max: '4.0' })
+          _react2.default.createElement('input', { name: 'gpa', onChange: onChangeForm, value: (gpa * 1).toFixed(1), className: 'form-control', type: 'number', step: '0.1', min: '0.0', max: '4.0' })
         ),
         _react2.default.createElement(
           'button',
@@ -29214,11 +29261,12 @@ var StudentCreate = function (_Component) {
 
 var mapStateToProps = function mapStateToProps(_ref, _ref2) {
   var students = _ref.students;
-  var id = _ref2.id;
+  var id = _ref2.id,
+      history = _ref2.history;
 
   return { student: students && students.find(function (student) {
       return student.id === id;
-    }) };
+    }), history: history };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
@@ -29228,8 +29276,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
     createStudent: function createStudent(student) {
       return dispatch((0, _store.createStudent)(student, history));
     },
-    updateStudent: function updateStudent(student, id, campus) {
-      return dispatch((0, _store.updateStudent)(student, id, campus, history));
+    updateStudent: function updateStudent(student, id) {
+      return dispatch((0, _store.updateStudent)(student, id));
     }
   };
 };
@@ -29311,7 +29359,7 @@ var Campus = function (_Component) {
       var student_id = this.state.student_id;
 
       ev.preventDefault();
-      this.props.updateStudent({ campus_id: campus.id }, student_id, campus);
+      this.props.updateStudent({ campus_id: campus.id }, student_id);
     }
   }, {
     key: 'render',
@@ -29364,7 +29412,7 @@ var Campus = function (_Component) {
           { onClick: onUpdateStudent, disabled: !student_id, type: 'button' },
           'Add Student'
         ),
-        _react2.default.createElement(_StudentList2.default, { campus_id: campus && campus.id }),
+        _react2.default.createElement(_StudentList2.default, { campus: campus }),
         _react2.default.createElement(
           'button',
           { type: 'button', className: 'btn btn-default' },
@@ -29404,8 +29452,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
     deleteCampus: function deleteCampus(campus) {
       return dispatch((0, _store.deleteCampus)(campus, history));
     },
-    updateStudent: function updateStudent(student, id, campus) {
-      return dispatch((0, _store.updateStudent)(student, id, campus, history));
+    updateStudent: function updateStudent(student, id) {
+      return dispatch((0, _store.updateStudent)(student, id));
     }
   };
 };
@@ -29616,10 +29664,14 @@ var CampusCreate = function (_Component) {
           name = _state2.name,
           imageURL = _state2.imageURL,
           description = _state2.description;
-      var campus = this.props.campus;
+      var _props = this.props,
+          campus = _props.campus,
+          history = _props.history;
 
       ev.preventDefault();
-      this.props.updateCampus({ name: name, imageURL: imageURL, description: description }, campus.id);
+      this.props.updateCampus({ name: name, imageURL: imageURL, description: description }, campus.id).then(function (action) {
+        history.push('/campuses/' + campus.id);
+      });
     }
   }, {
     key: 'render',
@@ -29692,11 +29744,12 @@ var CampusCreate = function (_Component) {
 
 var mapStateToProps = function mapStateToProps(_ref2, _ref3) {
   var campuses = _ref2.campuses;
-  var id = _ref3.id;
+  var id = _ref3.id,
+      history = _ref3.history;
 
   return { campus: campuses.find(function (campus) {
       return campus.id === id;
-    }) };
+    }), history: history };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref4) {
@@ -29707,7 +29760,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref4) {
       return dispatch((0, _store.createCampus)(campus, history));
     },
     updateCampus: function updateCampus(campus, id) {
-      return dispatch((0, _store.updateCampus)(campus, id, history));
+      return dispatch((0, _store.updateCampus)(campus, id));
     }
   };
 };

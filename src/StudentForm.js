@@ -10,7 +10,7 @@ class StudentCreate extends Component {
       firstName: !student ? '' : student.firstName,
       lastName: !student ? '' : student.lastName,
       email: !student ? '' : student.email,
-      gpa: !student ? 4.0 : student.gpa,
+      gpa: !student ? 4.0 : student.gpa * 1,
       inputError: {},
       inputEdited: {}
     };
@@ -38,7 +38,6 @@ class StudentCreate extends Component {
   }
 
   onChangeForm(ev) {
-    ev.preventDefault();
     const inputName = ev.target.name;
     const inputValue = ev.target.value;
     const { inputEdited } = this.state;
@@ -70,7 +69,7 @@ class StudentCreate extends Component {
   onUpdateStudent(ev) {
     ev.preventDefault();
     const { firstName, lastName, email, gpa } = this.state;
-    const { student } = this.props;
+    const { student, history } = this.props;
     const inputError = Object.keys(this.validators).reduce((errors, field) => {
       const validator = this.validators[field];
       const value = this.state[field];
@@ -86,7 +85,10 @@ class StudentCreate extends Component {
       lastName,
       email,
       gpa
-    }, student.id, null);
+    }, student.id)
+      .then(() => {
+        history.push(`/students/${student.id}`);
+      });
   }
 
   render() {
@@ -108,7 +110,7 @@ class StudentCreate extends Component {
         }
         <div className='form-group'>
           <label>GPA</label>
-          <input name='gpa' onChange={onChangeForm} value={(this.state.gpa * 1).toFixed(1)} className='form-control' type='number' step='0.1' min='0.0' max='4.0' />
+          <input name='gpa' onChange={onChangeForm} value={(gpa * 1).toFixed(1)} className='form-control' type='number' step='0.1' min='0.0' max='4.0' />
         </div>
         <button onClick={!student ? onCreateStudent : onUpdateStudent} type='button' className='btn btn-primary' disabled={inputEmpty}>
           {!student ? ('Add') : ('Edit')} Student
@@ -116,31 +118,31 @@ class StudentCreate extends Component {
         {
           Object.keys(fields).map(field => {
             return inputEdited[field] && !this.state[field].length &&
-              (<div key={field} className='alert alert-danger'>
+              <div key={field} className='alert alert-danger'>
                 {`Student's ${fields[field].toLowerCase()} must be entered.`}
-              </div>);
+              </div>;
           })
         }
         {!inputEdited.email && inputError.email && (<div className='alert alert-danger'>
           {inputError.email}
         </div>)}
         {inputEdited.gpa && (gpa < 0 || gpa > 4) &&
-          (<div className='alert alert-danger'>
+          <div className='alert alert-danger'>
             {`Student's GPA must be between 0.0 and 4.0.`}
-          </div>)}
+          </div>}
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ students }, { id }) => {
-  return { student: students && students.find(student => student.id === id) };
+const mapStateToProps = ({ students }, { id, history }) => {
+  return { student: students && students.find(student => student.id === id), history };
 };
 
 const mapDispatchToProps = (dispatch, { history }) => {
   return {
     createStudent: (student) => dispatch(createStudent(student, history)),
-    updateStudent: (student, id, campus) => dispatch(updateStudent(student, id, campus, history))
+    updateStudent: (student, id) => dispatch(updateStudent(student, id))
   };
 };
 

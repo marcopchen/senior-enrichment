@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getCampuses, getStudents } from './store';
+import { readCampuses, readStudents } from './store';
 import Nav from './Nav';
 import Home from './Home';
 import Student from './Student';
@@ -13,8 +13,8 @@ import CampusForm from './CampusForm';
 
 class App extends Component {
   componentDidMount() {
-    this.props.getCampuses();
-    this.props.getStudents();
+    this.props.readCampuses();
+    this.props.readStudents();
   }
 
   render() {
@@ -41,8 +41,8 @@ class App extends Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getCampuses: () => dispatch(getCampuses()),
-    getStudents: () => dispatch(getStudents())
+    readCampuses: () => dispatch(readCampuses()),
+    readStudents: () => dispatch(readStudents())
   };
 };
 

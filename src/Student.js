@@ -23,9 +23,9 @@ class Student extends Component {
 
   onUpdateStudent(ev) {
     const { campus_id } = this.state;
-    const { student, campus } = this.props;
+    const { student } = this.props;
     ev.preventDefault();
-    this.props.updateStudent({ campus_id: campus_id * 1 }, student.id, campus);
+    this.props.updateStudent({ campus_id: campus_id * 1 }, student.id);
   }
 
   onDeleteStudent(ev) {
@@ -58,7 +58,7 @@ class Student extends Component {
             }
           </select>
           <button onClick={onUpdateStudent} disabled={!campus_id} type='button'>
-            {!student ? ('Add to') : ('Switch')} Campus
+            {!campus ? ('Add to') : ('Switch')} Campus
           </button>
         </form>
         <button type='button' className='btn btn-default'>
@@ -81,7 +81,7 @@ const mapStateToProps = ({ students, campuses }, { id }) => {
 const mapDispatchToProps = (dispatch, { history }) => {
   return {
     deleteStudent: (student) => dispatch(deleteStudent(student, history)),
-    updateStudent: (student, id, campus) => dispatch(updateStudent(student, id, campus, history))
+    updateStudent: (student, id) => dispatch(updateStudent(student, id))
   };
 };
 

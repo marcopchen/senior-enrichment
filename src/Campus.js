@@ -31,7 +31,7 @@ class Campus extends Component {
     const { campus } = this.props;
     const { student_id } = this.state;
     ev.preventDefault();
-    this.props.updateStudent({ campus_id: campus.id }, student_id, campus);
+    this.props.updateStudent({ campus_id: campus.id }, student_id);
   }
 
   render() {
@@ -59,7 +59,7 @@ class Campus extends Component {
         <button onClick={onUpdateStudent} disabled={!student_id} type='button'>
           Add Student
         </button>
-        <StudentList campus_id={campus && campus.id} />
+        <StudentList campus={campus} />
         <button type='button' className='btn btn-default'>
           <Link to={`/campuses/${campus && campus.id}/edit`}>
             Edit Campus
@@ -79,7 +79,7 @@ const mapStateToProps = ({ campuses, students }, { id }) => {
 const mapDispatchToProps = (dispatch, { history }) => {
   return {
     deleteCampus: (campus) => dispatch(deleteCampus(campus, history)),
-    updateStudent: (student, id, campus) => dispatch(updateStudent(student, id, campus, history))
+    updateStudent: (student, id) => dispatch(updateStudent(student, id))
   };
 };
 

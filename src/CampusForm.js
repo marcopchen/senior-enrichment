@@ -29,22 +29,24 @@ class CampusCreate extends Component {
     const inputName = ev.target.name;
     const inputValue = ev.target.value;
     const { inputEdited } = this.state;
-    ev.preventDefault();
     inputEdited[inputName] = true;
     this.setState({ [inputName]: inputValue, inputEdited });
   }
 
   onCreateCampus(ev) {
-    const { name, imageURL, description } = this.state;
     ev.preventDefault();
+    const { name, imageURL, description } = this.state;
     this.props.createCampus({ name, imageURL, description });
   }
 
   onUpdateCampus(ev) {
-    const { name, imageURL, description } = this.state;
-    const { campus } = this.props;
     ev.preventDefault();
-    this.props.updateCampus({ name, imageURL, description }, campus.id);
+    const { name, imageURL, description } = this.state;
+    const { campus, history } = this.props;
+    this.props.updateCampus({ name, imageURL, description }, campus.id)
+      .then(() => {
+        history.push(`/campuses/${campus.id}`);
+      });
   }
 
   render() {
@@ -75,14 +77,14 @@ class CampusCreate extends Component {
   }
 }
 
-const mapStateToProps = ({ campuses }, { id }) => {
-  return { campus: campuses.find(campus => campus.id === id) };
+const mapStateToProps = ({ campuses }, { id, history }) => {
+  return { campus: campuses.find(campus => campus.id === id), history };
 };
 
 const mapDispatchToProps = (dispatch, { history }) => {
   return {
     createCampus: (campus) => dispatch(createCampus(campus, history)),
-    updateCampus: (campus, id) => dispatch(updateCampus(campus, id, history))
+    updateCampus: (campus, id) => dispatch(updateCampus(campus, id))
   };
 };
 
