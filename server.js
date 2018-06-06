@@ -73,7 +73,6 @@ app.delete('/api/campuses/:id', (req, res, next) => {
     .then(campus => {
       return Promise.all([
         campus.destroy(),
-        // Student.destroy({ where: { campusId: req.params.id } })
       ]);
     })
     .then(() => res.send())
