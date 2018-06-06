@@ -11,10 +11,6 @@ const Campus = conn.define('campus', {
       notEmpty: true
     }
   },
-  imageURL: {
-    type: Sequelize.STRING,
-    defaultValue: '/images/default-photo.jpg'
-  },
   description: {
     type: Sequelize.TEXT,
     defaultValue: ''

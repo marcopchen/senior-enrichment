@@ -39,9 +39,9 @@ class Campus extends Component {
     const { campus, students } = this.props;
     const { onDeleteCampus, onUpdateStudent, onChangeForm } = this;
     return (
-      <div>
+      <div className='campus-container'>
         <h2>Campus - {campus && campus.name}</h2>
-        <p>Description: {campus && campus.description}</p>
+        <p>{campus && campus.description}</p>
         <select name='student_id' onChange={onChangeForm}>
           <option disabled={student_id}>- choose -</option>
           {
@@ -60,11 +60,12 @@ class Campus extends Component {
           Add Student
         </button>
         <StudentList campus={campus} />
-        <button type='button' className='btn btn-default'>
-          <Link to={`/campuses/${campus && campus.id}/edit`}>
+        <br />
+        <Link to={`/campuses/${campus && campus.id}/edit`}>
+          <button type='button' className='btn btn-primary'>
             Edit Campus
-          </Link>
         </button>
+        </Link>
         <button onClick={onDeleteCampus} type='button' className='btn btn-danger'>Delete Campus</button>
       </div>
     );

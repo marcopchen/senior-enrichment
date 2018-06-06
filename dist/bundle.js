@@ -4250,7 +4250,7 @@ var StudentList = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'container' },
+        { className: 'student-list' },
         !students.length && _react2.default.createElement(
           'div',
           { className: 'alert' },
@@ -4289,6 +4289,7 @@ var StudentList = function (_Component) {
                   )
                 )
               ),
+              campus && _react2.default.createElement('br', null),
               campus && _react2.default.createElement(
                 'button',
                 { onClick: function onClick(ev) {
@@ -28660,8 +28661,7 @@ var _reactRouterDom = __webpack_require__(7);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Nav = function Nav(_ref) {
-  var path = _ref.path,
-      students = _ref.students,
+  var students = _ref.students,
       campuses = _ref.campuses;
 
   return _react2.default.createElement(
@@ -28694,8 +28694,6 @@ var Nav = function Nav(_ref) {
           _react2.default.createElement(
             'ul',
             { className: 'nav navbar-nav' },
-
-            // path === '/' ? <img src="/images/logo.png" /> :
             _react2.default.createElement(
               'li',
               null,
@@ -28705,8 +28703,6 @@ var Nav = function Nav(_ref) {
                 'Home'
               )
             ),
-
-            // path === '/students' ? <li>All Students ({students.length})</li> :
             _react2.default.createElement(
               'li',
               null,
@@ -28718,8 +28714,6 @@ var Nav = function Nav(_ref) {
                 ')'
               )
             ),
-
-            // path === '/campuses' ? <li>All Campuses ({campuses.length})</li> :
             _react2.default.createElement(
               'li',
               null,
@@ -28767,7 +28761,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Home = function Home() {
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'campus-container' },
     _react2.default.createElement(
       'h2',
       null,
@@ -28776,7 +28770,22 @@ var Home = function Home() {
     _react2.default.createElement(
       'p',
       null,
-      'Welcome.'
+      'Welcome to the University database.'
+    ),
+    _react2.default.createElement(
+      'p',
+      null,
+      'Feel free to browse through our students and campuses.'
+    ),
+    _react2.default.createElement(
+      'p',
+      null,
+      'You may make any necessary changes.'
+    ),
+    _react2.default.createElement(
+      'p',
+      null,
+      'Thank you.'
     )
   );
 };
@@ -28870,7 +28879,7 @@ var Student = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'campus-container' },
         _react2.default.createElement(
           'h2',
           null,
@@ -28930,11 +28939,11 @@ var Student = function (_Component) {
           )
         ),
         _react2.default.createElement(
-          'button',
-          { type: 'button', className: 'btn btn-default' },
+          _reactRouterDom.Link,
+          { to: '/students/' + (student && student.id) + '/edit' },
           _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/students/' + (student && student.id) + '/edit' },
+            'button',
+            { type: 'button', className: 'btn btn-primary' },
             'Edit Student'
           )
         ),
@@ -29005,7 +29014,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Students = function Students() {
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'campus-container' },
     _react2.default.createElement(
       'h2',
       null,
@@ -29015,15 +29024,16 @@ var Students = function Students() {
       'div',
       { className: 'container' },
       _react2.default.createElement(
-        'button',
-        { type: 'button', className: 'btn btn-default' },
+        _reactRouterDom.Link,
+        { to: '/students/add' },
         _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/students/add' },
+          'button',
+          { type: 'button', className: 'btn btn-primary' },
           'Add Student'
         )
       )
     ),
+    _react2.default.createElement('br', null),
     _react2.default.createElement(_StudentList2.default, null)
   );
 };
@@ -29110,7 +29120,6 @@ var StudentCreate = function (_Component) {
     value: function onChangeForm(ev) {
       var _setState;
 
-      ev.preventDefault();
       var inputName = ev.target.name;
       var inputValue = ev.target.value;
       var inputEdited = this.state.inputEdited;
@@ -29201,7 +29210,7 @@ var StudentCreate = function (_Component) {
       });
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'campus-container' },
         _react2.default.createElement(
           'h2',
           null,
@@ -29235,6 +29244,7 @@ var StudentCreate = function (_Component) {
           !student ? 'Add' : 'Edit',
           ' Student'
         ),
+        _react2.default.createElement('br', null),
         Object.keys(fields).map(function (field) {
           return inputEdited[field] && !_this4.state[field].length && _react2.default.createElement(
             'div',
@@ -29374,7 +29384,7 @@ var Campus = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'campus-container' },
         _react2.default.createElement(
           'h2',
           null,
@@ -29384,7 +29394,6 @@ var Campus = function (_Component) {
         _react2.default.createElement(
           'p',
           null,
-          'Description: ',
           campus && campus.description
         ),
         _react2.default.createElement(
@@ -29413,12 +29422,13 @@ var Campus = function (_Component) {
           'Add Student'
         ),
         _react2.default.createElement(_StudentList2.default, { campus: campus }),
+        _react2.default.createElement('br', null),
         _react2.default.createElement(
-          'button',
-          { type: 'button', className: 'btn btn-default' },
+          _reactRouterDom.Link,
+          { to: '/campuses/' + (campus && campus.id) + '/edit' },
           _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/campuses/' + (campus && campus.id) + '/edit' },
+            'button',
+            { type: 'button', className: 'btn btn-primary' },
             'Edit Campus'
           )
         ),
@@ -29486,7 +29496,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Campuses = function Campuses() {
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'campus-container' },
     _react2.default.createElement(
       'h2',
       null,
@@ -29496,15 +29506,16 @@ var Campuses = function Campuses() {
       'div',
       { className: 'container' },
       _react2.default.createElement(
-        'button',
-        { type: 'button', className: 'btn btn-default' },
+        _reactRouterDom.Link,
+        { to: '/campuses/add' },
         _react2.default.createElement(
-          _reactRouterDom.Link,
-          { to: '/campuses/add' },
+          'button',
+          { type: 'button', className: 'btn btn-primary' },
           'Add Campus'
         )
       )
     ),
+    _react2.default.createElement('br', null),
     _react2.default.createElement(_CampusList2.default, null)
   );
 };
@@ -29537,7 +29548,7 @@ var CampusList = function CampusList(_ref) {
 
   return _react2.default.createElement(
     'div',
-    { className: 'container' },
+    { className: 'student-list' },
     !campuses.length && _react2.default.createElement(
       'div',
       { className: 'alert' },
@@ -29548,11 +29559,11 @@ var CampusList = function CampusList(_ref) {
       { className: 'list-group' },
       campuses.map(function (campus) {
         return _react2.default.createElement(
-          'li',
-          { key: campus.id, className: 'list-group-item' },
+          _reactRouterDom.Link,
+          { key: campus.id, to: '/campuses/' + campus.id },
           _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: '/campuses/' + campus.id },
+            'li',
+            { className: 'list-group-item min-content user-item' },
             campus.name
           )
         );
@@ -29612,7 +29623,6 @@ var CampusCreate = function (_Component) {
 
     _this.state = {
       name: !campus ? '' : campus.name,
-      imageURL: !campus ? '' : campus.imageURL,
       description: !campus ? '' : campus.description,
       inputEdited: {}
     };
@@ -29629,7 +29639,6 @@ var CampusCreate = function (_Component) {
 
       this.setState({
         name: !campus ? '' : campus.name,
-        imageURL: !campus ? '' : campus.imageURL,
         description: !campus ? '' : campus.description
       });
     }
@@ -29642,34 +29651,31 @@ var CampusCreate = function (_Component) {
       var inputValue = ev.target.value;
       var inputEdited = this.state.inputEdited;
 
-      ev.preventDefault();
       inputEdited[inputName] = true;
       this.setState((_setState = {}, _defineProperty(_setState, inputName, inputValue), _defineProperty(_setState, 'inputEdited', inputEdited), _setState));
     }
   }, {
     key: 'onCreateCampus',
     value: function onCreateCampus(ev) {
+      ev.preventDefault();
       var _state = this.state,
           name = _state.name,
-          imageURL = _state.imageURL,
           description = _state.description;
 
-      ev.preventDefault();
-      this.props.createCampus({ name: name, imageURL: imageURL, description: description });
+      this.props.createCampus({ name: name, description: description });
     }
   }, {
     key: 'onUpdateCampus',
     value: function onUpdateCampus(ev) {
+      ev.preventDefault();
       var _state2 = this.state,
           name = _state2.name,
-          imageURL = _state2.imageURL,
           description = _state2.description;
       var _props = this.props,
           campus = _props.campus,
           history = _props.history;
 
-      ev.preventDefault();
-      this.props.updateCampus({ name: name, imageURL: imageURL, description: description }, campus.id).then(function (action) {
+      this.props.updateCampus({ name: name, description: description }, campus.id).then(function () {
         history.push('/campuses/' + campus.id);
       });
     }
@@ -29681,14 +29687,13 @@ var CampusCreate = function (_Component) {
           onChangeForm = this.onChangeForm;
       var _state3 = this.state,
           name = _state3.name,
-          imageURL = _state3.imageURL,
           description = _state3.description,
           inputEdited = _state3.inputEdited;
       var campus = this.props.campus;
 
       return _react2.default.createElement(
         'div',
-        null,
+        { className: 'campus-container' },
         _react2.default.createElement(
           'h2',
           null,
@@ -29710,16 +29715,6 @@ var CampusCreate = function (_Component) {
           _react2.default.createElement(
             'label',
             null,
-            'Image URL'
-          ),
-          _react2.default.createElement('input', { name: 'imageURL', onChange: onChangeForm, value: imageURL, type: 'url', className: 'form-control' })
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'form-group' },
-          _react2.default.createElement(
-            'label',
-            null,
             'Description'
           ),
           _react2.default.createElement('textarea', { name: 'description', className: 'form-control', rows: '5', onChange: onChangeForm, value: description })
@@ -29730,6 +29725,7 @@ var CampusCreate = function (_Component) {
           !campus ? 'Add' : 'Edit',
           ' Campus'
         ),
+        _react2.default.createElement('br', null),
         inputEdited.name && !name.length && _react2.default.createElement(
           'div',
           { className: 'alert alert-danger' },

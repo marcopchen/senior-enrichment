@@ -98,7 +98,7 @@ class StudentCreate extends Component {
     const fields = { firstName: 'First Name', lastName: 'Last Name', email: 'E-mail' };
     const inputEmpty = Object.keys(fields).some(field => !this.state[field].length);
     return (
-      <div>
+      <div className='campus-container'>
         <h2>{!student ? ('Add Student') : (`Edit Student - ${student.name}`)}</h2>
         {
           Object.keys(fields).map(field => (
@@ -115,6 +115,7 @@ class StudentCreate extends Component {
         <button onClick={!student ? onCreateStudent : onUpdateStudent} type='button' className='btn btn-primary' disabled={inputEmpty}>
           {!student ? ('Add') : ('Edit')} Student
         </button>
+        <br />
         {
           Object.keys(fields).map(field => {
             return inputEdited[field] && !this.state[field].length &&

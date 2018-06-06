@@ -38,7 +38,7 @@ class Student extends Component {
     const { student, campuses, campus } = this.props;
     const { onChangeForm, onUpdateStudent, onDeleteStudent } = this;
     return (
-      <div>
+      <div className='campus-container'>
         <h2>Student - {student && student.name}</h2>
         {
           !campus ? <div className='alert'>Not registered to a campus.</div> :
@@ -61,11 +61,11 @@ class Student extends Component {
             {!campus ? ('Add to') : ('Switch')} Campus
           </button>
         </form>
-        <button type='button' className='btn btn-default'>
-          <Link to={`/students/${student && student.id}/edit`}>
+        <Link to={`/students/${student && student.id}/edit`}>
+          <button type='button' className='btn btn-primary'>
             Edit Student
-          </Link>
-        </button>
+          </button>
+        </Link>
         <button onClick={onDeleteStudent} type='button' className='btn btn-danger'>Delete Student</button>
       </div>
     );

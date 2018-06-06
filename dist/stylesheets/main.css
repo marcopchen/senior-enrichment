@@ -9,7 +9,7 @@ a, span, h1, h2, h3, h4, h5, h6, div {
 
 select {
   -webkit-appearance: menulist-button;
-  background-color: transparent;
+  background-color: #fff;
   border: none;
   margin-left: -8px; }
   select:invalid {
@@ -135,6 +135,10 @@ body {
 @media (max-width: 511px) {
   .home {
     font-size: 6px; } }
+
+.img-circle {
+  height: 40px;
+}
 
 .student-item * {
   white-space: nowrap; }

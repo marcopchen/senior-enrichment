@@ -4,15 +4,16 @@ import CampusList from './CampusList';
 
 const Campuses = () => {
   return (
-    <div>
+    <div className='campus-container'>
       <h2>Campuses</h2>
       <div className='container'>
-        <button type='button' className='btn btn-default'>
-          <Link to='/campuses/add'>
+        <Link to='/campuses/add'>
+          <button type='button' className='btn btn-primary'>
             Add Campus
-          </Link>
-        </button>
+          </button>
+        </Link>
       </div>
+      <br />
       <CampusList />
     </div>
   );

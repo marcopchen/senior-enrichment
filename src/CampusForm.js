@@ -7,7 +7,6 @@ class CampusCreate extends Component {
     super();
     this.state = {
       name: !campus ? '' : campus.name,
-      imageURL: !campus ? '' : campus.imageURL,
       description: !campus ? '' : campus.description,
       inputEdited: {}
     };
@@ -20,7 +19,6 @@ class CampusCreate extends Component {
     const { campus } = nextProps;
     this.setState({
       name: !campus ? '' : campus.name,
-      imageURL: !campus ? '' : campus.imageURL,
       description: !campus ? '' : campus.description
     });
   }
@@ -35,15 +33,15 @@ class CampusCreate extends Component {
 
   onCreateCampus(ev) {
     ev.preventDefault();
-    const { name, imageURL, description } = this.state;
-    this.props.createCampus({ name, imageURL, description });
+    const { name, description } = this.state;
+    this.props.createCampus({ name, description });
   }
 
   onUpdateCampus(ev) {
     ev.preventDefault();
-    const { name, imageURL, description } = this.state;
+    const { name, description } = this.state;
     const { campus, history } = this.props;
-    this.props.updateCampus({ name, imageURL, description }, campus.id)
+    this.props.updateCampus({ name, description }, campus.id)
       .then(() => {
         history.push(`/campuses/${campus.id}`);
       });
@@ -51,18 +49,14 @@ class CampusCreate extends Component {
 
   render() {
     const { onCreateCampus, onUpdateCampus, onChangeForm } = this;
-    const { name, imageURL, description, inputEdited } = this.state;
+    const { name, description, inputEdited } = this.state;
     const { campus } = this.props;
     return (
-      <div>
+      <div className='campus-container'>
         <h2>{!campus ? ('Add Campus') : (`Edit Campus - ${campus.name}`)}</h2>
         <div className='form-group'>
           <label>Name</label>
           <input name='name' onChange={onChangeForm} value={name} type='text' className='form-control' />
-        </div>
-        <div className='form-group'>
-          <label>Image URL</label>
-          <input name='imageURL' onChange={onChangeForm} value={imageURL} type='url' className='form-control' />
         </div>
         <div className='form-group'>
           <label>Description</label>
@@ -71,6 +65,7 @@ class CampusCreate extends Component {
         <button onClick={!campus ? onCreateCampus : onUpdateCampus} disabled={!name.length} type='button' className='btn btn-primary'>
           {!campus ? ('Add') : ('Edit')} Campus
         </button>
+        <br />
         {inputEdited.name && !name.length && <div className='alert alert-danger'>Campus name must be entered.</div>}
       </div>
     );

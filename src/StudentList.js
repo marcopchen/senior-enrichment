@@ -18,7 +18,7 @@ class StudentList extends Component {
     const { students, campus } = this.props;
     const { onUpdateStudent } = this;
     return (
-      <div className='container'>
+      <div className='student-list'>
         {!students.length && <div className='alert'>No students registered.</div>}
         <div className='user-list'>
           {
@@ -39,6 +39,7 @@ class StudentList extends Component {
                       </h5>
                     </Link>
                   </div>
+                  {campus && <br />}
                   {campus && <button onClick={ev => onUpdateStudent(ev, student.id)} type='button'>
                     Remove Student
                   </button>}

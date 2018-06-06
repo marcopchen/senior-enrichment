@@ -51,15 +51,15 @@ function generateCampuses() {
   const campuses = [];
   campuses.push(Campus.build({
     name: 'Stern School of Business',
-    description: chance.n(chance.paragraph, 1).join('\n')
+    description: `The New York University Leonard N. Stern School of Business (commonly known as The Stern School or Stern) is a business school in New York University. It is also a founding member of the Association to Advance Collegiate Schools of Business. It was established as the School of Commerce, Accounts and Finance in 1900, the school changed its name in 1988 in honor of Leonard N. Stern, an alumnus and benefactor of the school. One of the most prestigious business schools in the world, it is also one of the oldest. The school is located on NYU's Greenwich Village campus next to the Courant Institute of Mathematical Sciences. Its alumni include some of the wealthiest in the world, as well as top business leaders and executives.`
   }));
   campuses.push(Campus.build({
     name: 'Tisch School of the Arts',
-    description: chance.n(chance.paragraph, 1).join('\n')
+    description: `The New York University Tisch School of the Arts (also known as Tisch, TNYU, and TTSOA) is a center of study in the performing and media arts. Founded on August 17, 1965, the Tisch is a training ground for artists, scholars of the arts, and filmmakers. The school merges the technical training of a professional school with the academic resources of a major research university to immerse students in their intended artistic disciplines. It is located at 721 Broadway in Manhattan, New York City. As of 2017, it had more alumni working in Broadway theatre than any other school for theater in the United States.`
   }));
   campuses.push(Campus.build({
     name: 'Tandon School of Engineering',
-    description: chance.n(chance.paragraph, 1).join('\n')
+    description: `The New York University Tandon School of Engineering (commonly referred to as Tandon) is the engineering and applied sciences school of New York University. Tandon is the second oldest private engineering and technology school in the United States. The school's campus is in Brooklyn's MetroTech Center, an urban academic-industrial research park. It is one of several engineering schools that were founded based on a European polytechnic university model in the 1800s, in response to the increasing industrialization of the United States. It has been a key center of research in the development of microwave, wireless, radar, electronics in general, polymers, industrial engineering and operations research and the US space program.`
   }));
   return campuses;
 }
@@ -74,12 +74,6 @@ function createCampuses() {
 
 function createStudents(createdCampuses) {
   return Promise.map(generateStudents(createdCampuses), student => student.save());
-  // .then(createdStudents => {
-  //   return Promise.map(createdStudents, student => {
-  //     const campus = chance.pick(createdCampuses);
-  //     return student.setCampus(campus);
-  //   });
-  // });
 }
 
 function seed() {
